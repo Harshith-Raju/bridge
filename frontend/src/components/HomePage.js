@@ -160,7 +160,7 @@ const HomePage = () => {
               cursor: "pointer",
               transition: "background-color 0.3s ease",
             }}
-            onClick={() => (window.location.href = "/register-company")}
+            onClick={() => (window.location.href = "/register")}
           >
             Register Company
           </button>
