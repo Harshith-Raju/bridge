@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const authRoutes = require("./routes/auth");
+const companyRoutes = require("./routes/company"); // Import company routes
+const nodemailer = require("nodemailer"); // Import Nodemailer
 
 const app = express();
 
@@ -22,6 +24,7 @@ mongoose
 
 // Routes
 app.use("/api", authRoutes);
+app.use("/api/companies", companyRoutes); // Use company routes
 
 // Start Server
 const PORT = process.env.PORT || 5000;

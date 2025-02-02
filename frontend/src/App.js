@@ -6,6 +6,9 @@ import SignUp from "./components/SignUp";
 import ForgotPassword from "./components/ForgotPassword";
 import HomePage from "./components/HomePage";
 import RegisterCompany from "./components/Register";
+import RegisterUser from "./components/RegisterCompany";
+import CompanyList from "./components/CompanyList";
+import LoginPage from "./components/Login1";
 const App = () => {
   return (
     <Router>
@@ -14,8 +17,12 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/login1" element={<LoginPage />} />
+        <Route path="/company-list" element={<CompanyList />} />
+
+        <Route path="/register-user" element={<RegisterUser />} />
         <Route path="/home" element={<HomePage />} />
-        <Route path="/register-company" element={<RegisterCompany />} />
+        <Route path="/register" element={<RegisterCompany />} />
       </Routes>
     </Router>
   );
