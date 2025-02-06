@@ -44,7 +44,7 @@ const Logincmp = () => {
       console.log("✅ Login Successful:", response.data);
       localStorage.setItem("token", response.data.token);
       alert("Login successful!");
-      navigate("/home");
+      navigate("/homecom");
     } catch (err) {
       console.error("❌ Login Error:", err.response?.data?.message || err.message);
       setError(err.response?.data?.message || "Invalid credentials");

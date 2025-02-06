@@ -38,6 +38,15 @@ const Logininv = () => {
   // Submit login form
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check if the email and password match the specific admin credentials
+    if (formData.email === "harshithraju2005@gmail.com" && formData.password === "1234") {
+      console.log("✅ Admin login successful");
+      alert("Admin login successful!");
+      navigate("/adminhome1");
+      return;
+    }
+
     try {
       console.log("📤 Sending login request:", formData);
       const response = await api.post("/login", formData);
