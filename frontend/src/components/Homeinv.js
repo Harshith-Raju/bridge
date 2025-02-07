@@ -29,6 +29,11 @@ const HomePage = () => {
   const handleWishlistClick = () => navigate("/wishlist");
   const handleBlockClick = () => navigate("/blank");
 
+  // Navigation for Quick Access boxes
+  const handleQuickAccessClick = (route) => {
+    navigate(route);
+  };
+
   const styles = {
     container: {
       fontFamily: "Arial, sans-serif",
@@ -100,7 +105,6 @@ const HomePage = () => {
       textAlign: "center",
       boxShadow: "0 -2px 4px rgba(0, 0, 0, 0.1)",
     },
-
     footerBlock: {
       marginBottom: "20px",
       padding: "20px",
@@ -110,7 +114,6 @@ const HomePage = () => {
       textAlign: "center",
     },
     footerHeading: { fontSize: "18px", marginBottom: "10px", fontWeight: "bold" },
-
   };
 
   const franchises = [
@@ -149,7 +152,8 @@ const HomePage = () => {
       {/* Scrolling Blocks Section */}
       <div style={styles.blocksContainer} ref={scrollContainerRef}>
         {franchises.concat(franchises).map((franchise, index) => (
-          <div key={index}
+          <div
+            key={index}
             style={styles.block}
             onClick={handleBlockClick}
             onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
@@ -166,22 +170,25 @@ const HomePage = () => {
         <h2 style={{ marginBottom: "20px" }}>Quick Access</h2>
         <div style={{ display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap" }}>
           {[
-            { icon: <FaUserPlus size={50} color="#007bff" />, label: "Register" },
-            { icon: <FaChartLine size={50} color="#28a745" />, label: "Track Your Progress" },
-            { icon: <FaQuestionCircle size={50} color="#ffc107" />, label: "FAQs" },
-            { icon: <FaBuilding size={50} color="#dc3545" />, label: "View All Companies" },
+            { icon: <FaUserPlus size={50} color="#007bff" />, label: "Register", route: "/registerinv" },
+            { icon: <FaChartLine size={50} color="#28a745" />, label: "Track Your Progress", route: "/progress" },
+            { icon: <FaQuestionCircle size={50} color="#ffc107" />, label: "FAQs", route: "/faqs" },
+            { icon: <FaBuilding size={50} color="#dc3545" />, label: "View All Companies", route: "/comlist" },
           ].map((item, index) => (
-            <div key={index}
+            <div
+              key={index}
               style={styles.quickAccessBlock}
-              onClick={handleBlockClick}
+              onClick={() => handleQuickAccessClick(item.route)}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}>
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
               {item.icon}
               <p style={{ fontSize: "20px", fontWeight: "bold", marginTop: "15px" }}>{item.label}</p>
             </div>
           ))}
         </div>
       </div>
+
       {/* Footer Section */}
       <div style={styles.footer}>
         <div style={styles.footerBlock}>
@@ -199,7 +206,6 @@ const HomePage = () => {
           <p>Phone: +1 (123) 456-7890</p>
         </div>
       </div>
-
     </div>
   );
 };

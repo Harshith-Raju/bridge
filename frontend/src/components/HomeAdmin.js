@@ -18,9 +18,9 @@ const AdminHome = () => {
 
   // Sections data
   const sections = [
-    { title: "Company List", icon: <Business fontSize="large" />, path: "/companies" },
-    { title: "Investor List", icon: <MonetizationOn fontSize="large" />, path: "/adminhome" },
-    { title: "User Management", icon: <People fontSize="large" />, path: "/users" },
+    { title: "Company List", icon: <Business fontSize="large" />, path: "/businesslist" },
+    { title: "Investor List", icon: <MonetizationOn fontSize="large" />, path: "/Investorlist" },
+    { title: "User Management", icon: <People fontSize="large" />, path: "/NotifyAdmmin" },
     { title: "Reports & Analytics", icon: <BarChart fontSize="large" />, path: "/reports" },
   ];
 

@@ -9,15 +9,15 @@ import ForgotPassword from "./components/ForgotPassword";
 import HomePage from "./components/Homeinv.js";
 import HomePageCom from "./components/Homecomp.js";
 import AdminHome from "./components/HomeAdmin.js";
+import ComList from "./components/comlist.js";
 
 
 
-
-
+import BusinessList from "./components/Bussinesslist.js";
 import RegisterBusiness from "./components/RegisterCom.js";
 import RegisterInvestor from "./components/RegisterInv.js";
 import Investorlist from "./components/investorlist.js";
-import BusinessList from "./components/BusinessList.js";
+import Notification from "./components/Notifyadmin.js";
 const App = () => {
   return (
     <Router>
@@ -31,14 +31,14 @@ const App = () => {
         <Route path="/homecom" element={<HomePageCom />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/adminhome" element={<AdminHome />} />
-        <Route path="/adminhome" element={<Investorlist />} />
+        <Route path="/Investorlist" element={<Investorlist />} />
         <Route path="/registercom" element={<RegisterBusiness />} />
         <Route path="/registerinv" element={<RegisterInvestor />} />
-        
-        
-        
-        
         <Route path="/businesslist" element={<BusinessList />} />
+        <Route path="/comlist" element={<ComList />} />
+        
+        
+        <Route path="/NotifyAdmmin" element={<Notification />} />
       </Routes>
     </Router>
   );

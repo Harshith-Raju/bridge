@@ -43,7 +43,7 @@ const Logininv = () => {
     if (formData.email === "harshithraju2005@gmail.com" && formData.password === "1234") {
       console.log("✅ Admin login successful");
       alert("Admin login successful!");
-      navigate("/adminhome1");
+      navigate("/adminhome");
       return;
     }
 

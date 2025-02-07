@@ -81,7 +81,7 @@ const HomePageCom = () => {
           <IconButton onClick={() => navigate("/landingpage")} sx={{ fontSize: "28px", color: darkMode ? "#fff" : "#007bff" }}>
             <ExitToAppIcon fontSize="large" />
           </IconButton>
-          <IconButton onClick={() => navigate("/profile")} sx={{ fontSize: "28px", color: darkMode ? "#fff" : "#007bff" }}>
+          <IconButton onClick={() => navigate("/registercom")} sx={{ fontSize: "28px", color: darkMode ? "#fff" : "#007bff" }}>
             <AccountCircleIcon fontSize="large" />
           </IconButton>
           <IconButton onClick={() => setDarkMode(!darkMode)} sx={{ fontSize: "28px" }}>
@@ -98,37 +98,40 @@ const HomePageCom = () => {
       </Box>
 
       {/* Three Boxes Section */}
-      <Box sx={{ display: "flex", justifyContent: "center", gap: "20px", marginTop: "30px", padding: "0 20px" }}>
-        {[
-          { text: "Register", icon: <BusinessIcon fontSize="large" /> },
-          { text: "Investors List", icon: <GroupIcon fontSize="large" /> },
-          { text: "Contact Us", icon: <CallIcon fontSize="large" /> },
-        ].map((item, index) => (
-          <Box
-            key={index}
-            sx={{
-              width: "280px",
-              height: "220px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "8px",
-              cursor: "pointer",
-              boxShadow: "2px 4px 8px rgba(0, 0, 0, 0.1)",
-              backgroundColor: darkMode ? "#1c1c1c" : "#fff",
-              color: darkMode ? "#fff" : "#000",
-              "&:hover": { transform: "scale(1.05)" },
-            }}
-            onMouseEnter={() => setHoveredBox(index)}
-            onMouseLeave={() => setHoveredBox(null)}
-            onClick={() => navigate(`/${item.text.toLowerCase().replace(" ", "")}`)}
-          >
-            {item.icon}
-            <Typography variant="h6" sx={{ marginTop: "10px" }}>{item.text}</Typography>
-          </Box>
-        ))}
-      </Box>
+     {/* Three Boxes Section */}
+<Box sx={{ display: "flex", justifyContent: "center", gap: "20px", marginTop: "30px", padding: "0 20px" }}>
+  {[
+    { text: "Register", icon: <BusinessIcon fontSize="large" />, route: "/registercom" },
+    
+    { text: "Investors List", icon: <GroupIcon fontSize="large" />, route: "/investors-list" },
+    { text: "Contact Us", icon: <CallIcon fontSize="large" />, route: "/contact" },
+  ].map((item, index) => (
+    <Box
+      key={index}
+      sx={{
+        width: "280px",
+        height: "220px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "8px",
+        cursor: "pointer",
+        boxShadow: "2px 4px 8px rgba(0, 0, 0, 0.1)",
+        backgroundColor: darkMode ? "#1c1c1c" : "#fff",
+        color: darkMode ? "#fff" : "#000",
+        "&:hover": { transform: "scale(1.05)" },
+      }}
+      onMouseEnter={() => setHoveredBox(index)}
+      onMouseLeave={() => setHoveredBox(null)}
+      onClick={() => navigate(item.route)}
+    >
+      {item.icon}
+      <Typography variant="h6" sx={{ marginTop: "10px" }}>{item.text}</Typography>
+    </Box>
+  ))}
+</Box>
+
 
       {/* About Us Section with Collage */}
       <Box sx={{ textAlign: "center", padding: "40px 20px", backgroundColor: darkMode ? "#1c1c1c" : "#f8f9fa", marginTop: "30px" }}>
