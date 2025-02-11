@@ -170,7 +170,7 @@ const HomePage = () => {
         <h2 style={{ marginBottom: "20px" }}>Quick Access</h2>
         <div style={{ display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap" }}>
           {[
-            { icon: <FaUserPlus size={50} color="#007bff" />, label: "Register", route: "/registerinv" },
+            { icon: <FaUserPlus size={50} color="#007bff" />, label: "Register", route: "/registerin" },
             { icon: <FaChartLine size={50} color="#28a745" />, label: "Track Your Progress", route: "/progress" },
             { icon: <FaQuestionCircle size={50} color="#ffc107" />, label: "FAQs", route: "/faqs" },
             { icon: <FaBuilding size={50} color="#dc3545" />, label: "View All Companies", route: "/comlist" },
