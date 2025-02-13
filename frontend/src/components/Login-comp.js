@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../api";
 import {
@@ -11,31 +11,28 @@ import {
   Typography,
 } from "@mui/material";
 import { motion } from "framer-motion";
+import { Business, Work, Apartment, Description, TrendingUp } from "@mui/icons-material";
 
-// CSS keyframes for a moving gradient background
-const movingBackground = {
-  animation: `gradientShift 15s ease infinite`,
-  background: "linear-gradient(45deg, #0B3D91, #1A237E, #DAA520)",
-  backgroundSize: "400% 400%",
-  "@keyframes gradientShift": {
-    "0%": { backgroundPosition: "0% 50%" },
-    "50%": { backgroundPosition: "100% 50%" },
-    "100%": { backgroundPosition: "0% 50%" },
-  },
-};
+const companyIcons = [Business, Work, Apartment, Description, TrendingUp];
 
 const Logincmp = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [activeIcon, setActiveIcon] = useState(0);
   const navigate = useNavigate();
 
-  // Handle input changes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIcon((prev) => (prev + 1) % companyIcons.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Submit login form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -51,23 +48,40 @@ const Logincmp = () => {
     }
   };
 
-  // Framer Motion variants for form and info box animations
-  const containerVariant = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
-  };
+  const AnimatedIcon = companyIcons[activeIcon];
 
   return (
     <Box
       sx={{
         minHeight: "100vh",
-        ...movingBackground,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         p: 2,
+        position: "relative",
+        backgroundColor: "#F5F7FA",
+        overflow: "hidden",
       }}
     >
+      {[...Array(25)].map((_, i) => {
+        const Icon = companyIcons[i % companyIcons.length];
+        return (
+          <motion.div
+            key={i}
+            animate={{ y: [0, -30, 30, 0], opacity: [0.8, 1, 0.8] }}
+            transition={{ duration: 5, repeat: Infinity, delay: i * 0.2 }}
+            style={{
+              position: "absolute",
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              color: "rgba(0, 0, 0, 0.3)",
+            }}
+          >
+            <Icon sx={{ fontSize: 40 }} />
+          </motion.div>
+        );
+      })}
+      
       <Container maxWidth="md">
         <Paper
           elevation={8}
@@ -77,91 +91,26 @@ const Logincmp = () => {
             backdropFilter: "blur(8px)",
             backgroundColor: "rgba(255, 255, 255, 0.9)",
           }}
-          component={motion.div}
-          initial="hidden"
-          animate="visible"
-          variants={containerVariant}
         >
           <Grid container spacing={4}>
-            {/* Info/Attraction Section */}
-            <Grid
-              item
-              xs={12}
-              md={6}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRight: { md: "1px solid #ccc" },
-                textAlign: "center",
-                pr: { md: 3 },
-              }}
-              component={motion.div}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            >
-              <Box
-                component="img"
-                src="https://via.placeholder.com/250x250.png?text=Official+Logo"
-                alt="Official"
-                sx={{ width: { xs: "150px", md: "200px" }, mb: 2, borderRadius: "50%" }}
-              />
-              <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1, color: "#0B3D91" }}>
-                Official Portal
+            <Grid item xs={12} md={6} sx={{ textAlign: "center", pr: { md: 3 } }}>
+              <motion.div animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity }}>
+                <AnimatedIcon sx={{ fontSize: 100, color: "#0B3D91" }} />
+              </motion.div>
+              <Typography variant="h5" sx={{ fontWeight: "bold", mt: 2, color: "#0B3D91" }}>
+                Company Portal
               </Typography>
               <Typography variant="body1" sx={{ mb: 2, color: "#333" }}>
-                Welcome to our official platform where you can securely manage your account,
-                access exclusive content, and stay updated with the latest information.
+                Securely access your company's dashboard, manage profiles, and track insights.
               </Typography>
             </Grid>
-
-            {/* Login Form Section */}
-            <Grid
-              item
-              xs={12}
-              md={6}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                pl: { md: 3 },
-              }}
-              component={motion.div}
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            >
-              <Typography
-                variant="h4"
-                align="center"
-                gutterBottom
-                sx={{ fontWeight: "bold", color: "#0B3D91" }}
-              >
+            <Grid item xs={12} md={6}>
+              <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold", color: "#0B3D91" }}>
                 Login
               </Typography>
               <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-                <TextField
-                  label="Email"
-                  name="email"
-                  type="email"
-                  fullWidth
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  sx={{ mb: 3 }}
-                />
-                <TextField
-                  label="Password"
-                  name="password"
-                  type="password"
-                  fullWidth
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  sx={{ mb: 3 }}
-                />
+                <TextField label="Email" name="email" type="email" fullWidth required value={formData.email} onChange={handleChange} sx={{ mb: 3 }} />
+                <TextField label="Password" name="password" type="password" fullWidth required value={formData.password} onChange={handleChange} sx={{ mb: 3 }} />
                 {error && (
                   <Typography variant="body2" color="error" sx={{ mb: 2, textAlign: "center" }}>
                     {error}
@@ -173,7 +122,7 @@ const Logincmp = () => {
                   fullWidth
                   sx={{
                     py: 1.5,
-                    backgroundColor: "#DAA520",
+                    backgroundColor: "#143645",
                     fontWeight: "bold",
                     "&:hover": { backgroundColor: "#c5943b" },
                   }}
@@ -188,11 +137,8 @@ const Logincmp = () => {
                   </Link>
                 </Typography>
                 <Typography variant="body2" sx={{ mt: 1 }}>
-                  Don't have an account?{" "}
-                  <Link
-                    to="/signup"
-                    style={{ textDecoration: "none", color: "#0B3D91", fontWeight: "bold" }}
-                  >
+                  Don't have an account?{' '}
+                  <Link to="/signup" style={{ textDecoration: "none", color: "#0B3D91", fontWeight: "bold" }}>
                     Register here
                   </Link>
                 </Typography>

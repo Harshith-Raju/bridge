@@ -28,23 +28,46 @@ const BusinessList = () => {
           <Grid item xs={12} sm={6} md={4} key={business._id}>
             <Card>
               <CardContent>
-                <Typography variant="h5">{business.title}</Typography>
-                <Typography color="textSecondary">{business.registrationNumber}</Typography>
+                <Typography variant="h5">{business.companyName || 'No Company Name Available'}</Typography>
+                <Typography color="textSecondary">{business.industry || 'No Industry Available'}</Typography>
                 <Typography variant="body2" component="p">
-                  {business.website}
+                  Year Established: {business.yearEstablished || 'N/A'}
                 </Typography>
                 <Typography variant="body2" component="p">
-                  Phone: {business.phoneNumber}
+                  Headquarters: {business.headquarters || 'N/A'}
                 </Typography>
-                {business.financialDocuments && (
+                <Typography variant="body2" component="p">
+                  Website: {business.website || 'No Website Available'}
+                </Typography>
+                <Typography variant="body2" component="p">
+                  Franchise Name: {business.franchiseName || 'N/A'}
+                </Typography>
+                <Typography variant="body2" component="p">
+                  Franchise Description: {business.franchiseDescription || 'N/A'}
+                </Typography>
+                <Typography variant="body2" component="p">
+                  Investment Range: {business.investmentRange || 'N/A'}
+                </Typography>
+                <Typography variant="body2" component="p">
+                  Franchise Fee: {business.franchiseFee || 'N/A'}
+                </Typography>
+                <Typography variant="body2" component="p">
+                  Royalty Fee: {business.royaltyFee || 'N/A'}
+                </Typography>
+                <Typography variant="body2" component="p">
+                  Email: {business.email || 'No Email Available'}
+                </Typography>
+                {business.financialDocuments ? (
                   <Typography variant="body2" component="p">
                     <a href={business.financialDocuments} target="_blank" rel="noopener noreferrer">
                       View Financial Document
                     </a>
                   </Typography>
+                ) : (
+                  <Typography variant="body2" component="p">No Financial Document Available</Typography>
                 )}
                 <Typography variant="body2" component="p">
-                  Status: <Chip label={business.status} color={business.status === 'Approved' ? 'success' : 'warning'} />
+                  Status: <Chip label={business.status || 'Unknown'} color={business.status === 'Approved' ? 'success' : 'warning'} />
                 </Typography>
               </CardContent>
             </Card>

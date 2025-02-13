@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
-import {
-  Container,
-  TextField,
-  Button,
-  Typography,
-  Box,
-  CircularProgress,
-  Alert,
-} from "@mui/material";
+import { TextField, Button, Typography, Box } from "@mui/material";
+import { keyframes } from "@emotion/react";
+
+// Faster and more dynamic floating animation
+const floatAnimation = keyframes`
+  0% { transform: translateY(0px) translateX(0px); opacity: 0.8; }
+  25% { transform: translateY(-60px) translateX(30px); opacity: 1; }
+  50% { transform: translateY(40px) translateX(-20px); opacity: 0.9; }
+  75% { transform: translateY(-50px) translateX(20px); opacity: 1; }
+  100% { transform: translateY(0px) translateX(0px); opacity: 0.8; }
+`;
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -19,7 +21,6 @@ const ForgotPassword = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Step 1: Send OTP
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -29,77 +30,131 @@ const ForgotPassword = () => {
       setErrorMessage("");
       setOtpSent(true);
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "Failed to send OTP");
+      setErrorMessage(error.response?.data?.message || "Failed to send OTP ❌");
       setSuccessMessage("");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
-
-  // Step 2: Reset Password
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const response = await axios.post("http://localhost:5000/api/reset-password", { email, otp, newPassword });
-      setSuccessMessage(response.data.message);
-      setErrorMessage("");
-    } catch (error) {
-      setErrorMessage(error.response?.data?.message || "Failed to reset password");
-      setSuccessMessage("");
-    }
-    setLoading(false);
   };
 
   return (
-    <Container maxWidth="xs" sx={{ mt: 5, p: 3, boxShadow: 3, borderRadius: 2, bgcolor: "background.paper" }}>
-      <Typography variant="h5" align="center" gutterBottom>
-        {otpSent ? "Reset Password" : "Forgot Password"}
-      </Typography>
+    <div style={{
+      margin: 0,
+      height: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#1B2A41",
+      position: "relative",
+      overflow: "hidden",
+    }}>
+      {[...Array(30)].map((_, i) => (
+        <Typography
+          key={i}
+          style={{
+            position: "absolute",
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            color: "rgba(255, 255, 255, 0.5)",
+            fontSize: `${3 + Math.random()}rem`,
+            fontWeight: "bold",
+            animation:`${floatAnimation} ${0.8 + Math.random()}s ease-in-out infinite alternate`,
+          }}
+        >
+          ?
+        </Typography>
+      ))}
 
-      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-      {successMessage && <Alert severity="success">{successMessage}</Alert>}
+      <Box
+        sx={{
+          maxWidth: "400px",
+          padding: "30px",
+          borderRadius: "12px",
+          border: "2px solid #00A8E8",
+          backgroundColor: "rgba(255, 255, 255, 0.15)",
+          backdropFilter: "blur(12px)",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        }}
+      >
+        <Typography variant="h4" align="center" gutterBottom color="#FFF">
+          Forgot Password
+        </Typography>
+        <Typography variant="body1" align="center" color="#FFF" sx={{ fontStyle: "italic", mb: 2 }}>
+          "A strong password is the key to digital security. Reset it wisely! 🔑"
+        </Typography>
 
-      {!otpSent ? (
-        <Box component="form" onSubmit={handleSendOtp} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField
-            type="email"
-            label="Email"
-            variant="outlined"
-            fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : "Send OTP"}
-          </Button>
-        </Box>
-      ) : (
-        <Box component="form" onSubmit={handleResetPassword} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField
-            type="text"
-            label="Enter OTP"
-            variant="outlined"
-            fullWidth
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            required
-          />
-          <TextField
-            type="password"
-            label="New Password"
-            variant="outlined"
-            fullWidth
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-          />
-          <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : "Reset Password"}
-          </Button>
-        </Box>
-      )}
-    </Container>
+        {!otpSent ? (
+          <form onSubmit={handleSendOtp}>
+            <TextField
+              fullWidth
+              label="Enter Email"
+              variant="outlined"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              InputLabelProps={{ style: { color: "#FFF" } }}
+              InputProps={{
+                style: { color: "#FFF", background: "rgba(255,255,255,0.3)", borderRadius: "5px" },
+              }}
+              sx={{ input: { color: "#FFF" }, label: { color: "#FFF" }, mt: 2 }}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ mt: 2, backgroundColor: "#00A8E8", color: "#FFF" }}
+              fullWidth
+              disabled={loading}
+            >
+              {loading ? "Sending..." : "Send OTP"}
+            </Button>
+          </form>
+        ) : (
+          <form>
+            <TextField
+              fullWidth
+              label="Enter OTP"
+              variant="outlined"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              required
+              InputProps={{ style: { color: "#FFF" } }}
+              sx={{ input: { background: "rgba(255,255,255,0.2)", borderRadius: "5px" }, mt: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="New Password"
+              type="password"
+              variant="outlined"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              InputProps={{ style: { color: "#FFF" } }}
+              sx={{ input: { background: "rgba(255,255,255,0.2)", borderRadius: "5px" }, mt: 2 }}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ mt: 2, backgroundColor: "#00A8E8", color: "#FFF" }}
+              fullWidth
+              disabled={loading}
+            >
+              {loading ? "Resetting..." : "Reset Password"}
+            </Button>
+          </form>
+        )}
+
+        {errorMessage && (
+          <Typography variant="body2" color="#FF4C4C" align="center" mt={2}>
+            {errorMessage}
+          </Typography>
+        )}
+        {successMessage && (
+          <Typography variant="body2" color="#32CD32" align="center" mt={2}>
+            {successMessage}
+          </Typography>
+        )}
+      </Box>
+    </div>
   );
 };
 

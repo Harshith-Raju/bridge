@@ -1,90 +1,267 @@
 import React, { useState } from "react";
-import { TextField, Button, MenuItem, Container, Typography, Box } from "@mui/material";
-import axios from 'axios';
 
 const RegisterInvestor = () => {
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     fullName: "",
     dob: "",
+    gender: "",
+    nationality: "",
+    profilePicture: null,
     email: "",
     phone: "",
     address: "",
-    nationality: "",
-    description: "",
-    location: "",
+    preferredIndustry: "",
+    investmentBudgetMin: "",
+    investmentBudgetMax: "",
+    preferredLocation: "",
+    franchiseType: "",
+    educationalQualification: "",
+    professionalExperience: "",
+    previousFranchiseExperience: "",
   });
 
-  const [errors, setErrors] = useState({});
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "file" ? files[0] : value,
+    });
   };
 
-  const validateForm = () => {
-    let formErrors = {};
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    const phonePattern = /^[0-9]{10}$/;
-
-    if (!emailPattern.test(formData.email)) {
-      formErrors.email = "Please enter a valid email address.";
-    }
-    if (!phonePattern.test(formData.phone)) {
-      formErrors.phone = "Please enter a valid 10-digit phone number.";
-    }
-
-    setErrors(formErrors);
-    return Object.keys(formErrors).length === 0;
+  const nextStep = () => {
+    setStep(step + 1);
   };
 
-  const handleSubmit = (e) => {
+  const prevStep = () => {
+    setStep(step - 1);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      axios.post('http://localhost:5000/api/investors', formData)
-        .then(response => {
-          alert("Investor Registered Successfully!");
-          // Optionally reset the form
-          setFormData({
-            fullName: "",
-            dob: "",
-            email: "",
-            phone: "",
-            address: "",
-            nationality: "",
-            description: "",
-            location: "",
-          });
-        })
-        .catch(error => {
-          console.error('There was an error!', error);
+
+    const data = new FormData();
+
+    // Append all fields to FormData
+    for (const key in formData) {
+      if (formData[key] !== null && formData[key] !== undefined) {
+        data.append(key, formData[key]);
+      }
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/investor", {
+        method: "POST",
+        body: data, // FormData is sent as the body
+      });
+
+      if (response.ok) {
+        alert("Registration successful! You will receive a confirmation email.");
+        setStep(1);
+        setFormData({
+          fullName: "",
+          dob: "",
+          gender: "",
+          nationality: "",
+          profilePicture: null,
+          email: "",
+          phone: "",
+          address: "",
+          preferredIndustry: "",
+          investmentBudgetMin: "",
+          investmentBudgetMax: "",
+          preferredLocation: "",
+          franchiseType: "",
+          educationalQualification: "",
+          professionalExperience: "",
+          previousFranchiseExperience: "",
         });
+      } else {
+        alert("Registration failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
     }
   };
 
   return (
-    <Container maxWidth="sm">
-      <Typography variant="h5" gutterBottom>
-        Investor Registration
-      </Typography>
-      <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <TextField name="fullName" label="Full Name" value={formData.fullName} onChange={handleInputChange} required />
-        <TextField name="dob" label="Date of Birth" type="date" InputLabelProps={{ shrink: true }} value={formData.dob} onChange={handleInputChange} required />
-        <TextField name="email" label="Email Address" type="email" value={formData.email} onChange={handleInputChange} required error={!!errors.email} helperText={errors.email} />
-        <TextField name="phone" label="Phone Number" type="tel" value={formData.phone} onChange={handleInputChange} required error={!!errors.phone} helperText={errors.phone} />
-        <TextField name="address" label="Address (City, State, Country)" value={formData.address} onChange={handleInputChange} required />
-        <TextField select name="nationality" label="Nationality" value={formData.nationality} onChange={handleInputChange} required>
-          <MenuItem value="">Select Nationality</MenuItem>
-          <MenuItem value="USA">USA</MenuItem>
-          <MenuItem value="Canada">Canada</MenuItem>
-          <MenuItem value="India">India</MenuItem>
-        </TextField>
-        <TextField name="location" label="Location" value={formData.location} onChange={handleInputChange} required />
-        <TextField name="description" label="Your Description" multiline rows={3} value={formData.description} onChange={handleInputChange} />
-        <Button type="submit" variant="contained" color="primary" fullWidth>
-          Register Investor
-        </Button>
-      </Box>
-    </Container>
+    <div>
+      <h1>Investor Registration</h1>
+      <form onSubmit={handleSubmit}>
+        {step === 1 && (
+          <div>
+            <h2>Personal Information</h2>
+            <input
+              type="text"
+              name="fullName"
+              placeholder="Full Name"
+              value={formData.fullName}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="date"
+              name="dob"
+              placeholder="Date of Birth"
+              value={formData.dob}
+              onChange={handleChange}
+              required
+            />
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+            <input
+              type="text"
+              name="nationality"
+              placeholder="Nationality"
+              value={formData.nationality}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="file"
+              name="profilePicture"
+              onChange={handleChange}
+            />
+            <button type="button" onClick={nextStep}>
+              Next
+            </button>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div>
+            <h2>Contact Information</h2>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="text"
+              name="address"
+              placeholder="Address (City, State, Country)"
+              value={formData.address}
+              onChange={handleChange}
+              required
+            />
+            <button type="button" onClick={prevStep}>
+              Previous
+            </button>
+            <button type="button" onClick={nextStep}>
+              Next
+            </button>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div>
+            <h2>Investment Preferences</h2>
+            <input
+              type="text"
+              name="preferredIndustry"
+              placeholder="Preferred Industry/Category"
+              value={formData.preferredIndustry}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="number"
+              name="investmentBudgetMin"
+              placeholder="Minimum Investment Budget"
+              value={formData.investmentBudgetMin}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="number"
+              name="investmentBudgetMax"
+              placeholder="Maximum Investment Budget"
+              value={formData.investmentBudgetMax}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="text"
+              name="preferredLocation"
+              placeholder="Preferred Location"
+              value={formData.preferredLocation}
+              onChange={handleChange}
+              required
+            />
+            <select
+              name="franchiseType"
+              value={formData.franchiseType}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Franchise Type</option>
+              <option value="single-unit">Single Unit</option>
+              <option value="multi-unit">Multi-Unit</option>
+              <option value="master-franchise">Master Franchise</option>
+            </select>
+            <button type="button" onClick={prevStep}>
+              Previous
+            </button>
+            <button type="button" onClick={nextStep}>
+              Next
+            </button>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div>
+            <h2>Background and Experience</h2>
+            <input
+              type="text"
+              name="educationalQualification"
+              placeholder="Educational Qualification"
+              value={formData.educationalQualification}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="text"
+              name="professionalExperience"
+              placeholder="Professional Experience (Years and Industry)"
+              value={formData.professionalExperience}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="text"
+              name="previousFranchiseExperience"
+              placeholder="Previous Franchise Experience (if any)"
+              value={formData.previousFranchiseExperience}
+              onChange={handleChange}
+            />
+            <button type="button" onClick={prevStep}>
+              Previous
+            </button>
+            <button type="submit">Submit</button>
+          </div>
+        )}
+      </form>
+    </div>
   );
 };
 

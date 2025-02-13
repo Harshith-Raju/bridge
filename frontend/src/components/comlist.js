@@ -10,12 +10,24 @@ import {
   CircularProgress,
   Alert,
   Box,
+  Rating,
+  TextField,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
+import { StarBorder } from "@mui/icons-material";
 
 const ComList = () => {
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [reviewText, setReviewText] = useState("");
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
     const fetchBusinesses = async () => {
@@ -34,6 +46,37 @@ const ComList = () => {
 
     fetchBusinesses();
   }, []);
+
+  const handleReviewDialogOpen = (business) => {
+    setSelectedBusiness(business);
+    setReviewDialogOpen(true);
+  };
+
+  const handleReviewDialogClose = () => {
+    setReviewDialogOpen(false);
+    setReviewText("");
+    setRating(0);
+  };
+
+  const handleReviewSubmit = async () => {
+    if (!selectedBusiness || !reviewText || rating === 0) return;
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/businesses/${selectedBusiness._id}/reviews`,
+        { text: reviewText, rating }
+      );
+      const updatedBusinesses = businesses.map((business) =>
+        business._id === selectedBusiness._id
+          ? { ...business, reviews: [...(business.reviews || []), response.data] }
+          : business
+      );
+      setBusinesses(updatedBusinesses);
+      handleReviewDialogClose();
+    } catch (error) {
+      console.error("Error submitting review:", error);
+    }
+  };
 
   return (
     <Container sx={{ paddingY: 4 }}>
@@ -86,6 +129,26 @@ const ComList = () => {
                       </Typography>
                     )}
                     <Chip label="Approved" color="success" sx={{ mt: 2 }} />
+                    <Box sx={{ mt: 2 }}>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => handleReviewDialogOpen(business)}
+                      >
+                        Add Review
+                      </Button>
+                    </Box>
+                    {business.reviews && business.reviews.length > 0 && (
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="h6">Reviews:</Typography>
+                        {business.reviews.map((review, index) => (
+                          <Box key={index} sx={{ mt: 1 }}>
+                            <Rating value={review.rating} readOnly />
+                            <Typography variant="body2">{review.text}</Typography>
+                          </Box>
+                        ))}
+                      </Box>
+                    )}
                   </CardContent>
                 </Card>
               </Grid>
@@ -97,6 +160,32 @@ const ComList = () => {
           )}
         </Grid>
       )}
+
+      <Dialog open={reviewDialogOpen} onClose={handleReviewDialogClose}>
+        <DialogTitle>Add Review for {selectedBusiness?.title}</DialogTitle>
+        <DialogContent>
+          <Rating
+            value={rating}
+            onChange={(event, newValue) => setRating(newValue)}
+            emptyIcon={<StarBorder fontSize="inherit" />}
+          />
+          <TextField
+            label="Your Review"
+            multiline
+            rows={4}
+            fullWidth
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleReviewDialogClose}>Cancel</Button>
+          <Button onClick={handleReviewSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

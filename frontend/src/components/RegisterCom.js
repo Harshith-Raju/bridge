@@ -1,103 +1,83 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const RegisterBusiness = () => {
+const RegisterCom = () => {
   const [formData, setFormData] = useState({
-    title: "",
-    registrationNumber: "",
-    taxId: "",
+    companyName: "",
+    industry: "",
+    yearEstablished: "",
+    headquarters: "",
     website: "",
-    phoneNumber: "",
-    financialDocuments: null, // File input
-    isAgreed: false,
+    franchiseName: "",
+    franchiseDescription: "",
+    investmentRange: "",
+    franchiseFee: "",
+    royaltyFee: "",
+    email: "",
   });
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-    if (type === "file") {
-      setFormData({ ...formData, [name]: files[0] }); // Save file object
-    } else if (type === "checkbox") {
-      setFormData({ ...formData, [name]: checked }); // Handle checkbox
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const formDataToSend = new FormData();
-    formDataToSend.append("title", formData.title);
-    formDataToSend.append("registrationNumber", formData.registrationNumber);
-    formDataToSend.append("taxId", formData.taxId);
-    formDataToSend.append("website", formData.website);
-    formDataToSend.append("phoneNumber", formData.phoneNumber);
-    if (formData.financialDocuments) {
-      formDataToSend.append("financialDocuments", formData.financialDocuments);
+    setLoading(true);
+
+    const data = new FormData();
+    for (const key in formData) {
+      data.append(key, formData[key]);
     }
-    formDataToSend.append("isAgreed", formData.isAgreed);
+    if (file) {
+      data.append("financialDocuments", file);
+    }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/businesses", formDataToSend, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const response = await axios.post("http://localhost:5000/api/businesses", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-
-      alert("Business Registered Successfully!");
-      console.log("Response:", response.data);
-      setFormData({
-        title: "",
-        registrationNumber: "",
-        taxId: "",
-        website: "",
-        phoneNumber: "",
-        financialDocuments: null,
-        isAgreed: false,
-      });
+      setMessage("Business registered! Awaiting admin approval.");
     } catch (error) {
-      console.error("Error submitting form:", error.response?.data || error.message);
-      alert("Error registering business.");
+      console.error("Error:", error.response?.data || error.message);
+      setMessage("Error registering business.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div style={{ width: "50%", margin: "auto", padding: "20px", textAlign: "center" }}>
-      <h2>Register Your Business</h2>
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <div>
-          <label>Business Title:</label>
-          <input type="text" name="title" value={formData.title} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Registration Number:</label>
-          <input type="text" name="registrationNumber" value={formData.registrationNumber} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Tax ID:</label>
-          <input type="text" name="taxId" value={formData.taxId} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Website:</label>
-          <input type="text" name="website" value={formData.website} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Phone Number:</label>
-          <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Upload Financial Document:</label>
-          <input type="file" name="financialDocuments" accept=".pdf,.doc,.jpg,.png" onChange={handleChange} />
-        </div>
-        <div>
-          <label>
-            <input type="checkbox" name="isAgreed" checked={formData.isAgreed} onChange={handleChange} />
-            I Agree to Terms & Conditions
-          </label>
-        </div>
-        <button type="submit">Register Business</button>
+      <h2>Register Business</h2>
+      <form onSubmit={handleSubmit}>
+        <input type="text" name="companyName" placeholder="Company Name" onChange={handleChange} required />
+        <input type="text" name="industry" placeholder="Industry" onChange={handleChange} required />
+        <input type="text" name="yearEstablished" placeholder="Year Established" onChange={handleChange} required />
+        <input type="text" name="headquarters" placeholder="Headquarters" onChange={handleChange} required />
+        <input type="text" name="website" placeholder="Website" onChange={handleChange} required />
+        <input type="text" name="franchiseName" placeholder="Franchise Name" onChange={handleChange} required />
+        <input type="text" name="franchiseDescription" placeholder="Franchise Description" onChange={handleChange} required />
+        <input type="text" name="investmentRange" placeholder="Investment Range" onChange={handleChange} required />
+        <input type="text" name="franchiseFee" placeholder="Franchise Fee" onChange={handleChange} required />
+        <input type="text" name="royaltyFee" placeholder="Royalty Fee" onChange={handleChange} required />
+        <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
+        <input type="file" onChange={handleFileChange} required />
+        <button type="submit" disabled={loading}>
+          {loading ? "Submitting..." : "Submit"}
+        </button>
       </form>
+      {message && <p>{message}</p>}
     </div>
   );
 };
 
-export default RegisterBusiness;
+export default RegisterCom;

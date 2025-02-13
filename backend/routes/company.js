@@ -1,4 +1,3 @@
-// routes/company.js
 const express = require("express");
 const nodemailer = require("nodemailer");
 const Company = require("../models/Company");
@@ -14,7 +13,36 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Register a new company
+// ✅ Function to send email notifications
+const sendInvestorNotification = async (companyName) => {
+  try {
+    const investors = await getInvestors(); // Fetch investor emails from DB
+    if (!investors.length) {
+      console.log("⚠️ No investors found. Skipping email notification.");
+      return;
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: investors.join(", "),
+      subject: "New Company Registered",
+      text: `A new company has been registered: ${companyName}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("✅ Email sent successfully to investors.");
+  } catch (error) {
+    console.error("❌ Error sending investor notification email:", error.message);
+  }
+};
+
+// ✅ Function to get investor emails from database (dummy for now)
+const getInvestors = async () => {
+  // Replace with actual database query, e.g., Investor.find({}, "email");
+  return ["investor1@example.com", "investor2@example.com"];
+};
+
+// ✅ Register a new company
 router.post("/", async (req, res) => {
   const { name, description, owner } = req.body;
 
@@ -22,42 +50,27 @@ router.post("/", async (req, res) => {
     const newCompany = new Company({ name, description, owner });
     await newCompany.save();
 
-    // Send email notification to investors
-    const investors = await getInvestors(); // Implement this function to get investor emails
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: investors.join(", "),
-      subject: "New Company Registered",
-      text: `A new company has been registered: ${name}`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        return console.log(error);
-      }
-      console.log("Email sent: " + info.response);
-    });
+    // Send email notification (non-blocking)
+    sendInvestorNotification(name).catch((error) =>
+      console.error("❌ Email notification failed:", error.message)
+    );
 
     res.status(201).json(newCompany);
   } catch (error) {
-    res.status(500).json({ message: "Error registering company", error });
+    console.error("❌ Error registering company:", error.message);
+    res.status(500).json({ message: "Error registering company", error: error.message });
   }
 });
 
-// Get all companies
+// ✅ Get all companies
 router.get("/", async (req, res) => {
   try {
     const companies = await Company.find();
     res.json(companies);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching companies", error });
+    console.error("❌ Error fetching companies:", error.message);
+    res.status(500).json({ message: "Error fetching companies", error: error.message });
   }
 });
-
-// Function to get investor emails (dummy implementation)
-const getInvestors = async () => {
-  // Replace this with actual logic to fetch investor emails from your database
-  return ["investor1@example.com", "investor2@example.com"];
-};
 
 module.exports = router;

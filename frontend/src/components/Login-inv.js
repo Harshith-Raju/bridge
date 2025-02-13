@@ -11,203 +11,137 @@ import {
   Typography,
 } from "@mui/material";
 import { motion } from "framer-motion";
+import { keyframes } from "@emotion/react";
 
-// CSS keyframes for a moving gradient background
-const movingBackground = {
-  animation: `gradientShift 15s ease infinite`,
-  background: "linear-gradient(45deg, #0B3D91, #1A237E, #DAA520)",
-  backgroundSize: "400% 400%",
-  "@keyframes gradientShift": {
-    "0%": { backgroundPosition: "0% 50%" },
-    "50%": { backgroundPosition: "100% 50%" },
-    "100%": { backgroundPosition: "0% 50%" },
-  },
-};
+// Floating animation for investor-related symbols
+const floatAnimation = keyframes`
+  0% { transform: translateY(0px) translateX(0px); opacity: 0.8; }
+  25% { transform: translateY(-60px) translateX(30px); opacity: 1; }
+  50% { transform: translateY(40px) translateX(-20px); opacity: 0.9; }
+  75% { transform: translateY(-50px) translateX(20px); opacity: 1; }
+  100% { transform: translateY(0px) translateX(0px); opacity: 0.8; }
+`;
+
+const investorSymbols = ["💹", "📈", "💰", "🏦", "📊"];
 
 const Logininv = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Submit login form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Check if the email and password match the specific admin credentials
     if (formData.email === "harshithraju2005@gmail.com" && formData.password === "1234") {
-      console.log("✅ Admin login successful");
       alert("Admin login successful!");
       navigate("/adminhome");
       return;
     }
-
     try {
-      console.log("📤 Sending login request:", formData);
       const response = await api.post("/login", formData);
-      console.log("✅ Login Successful:", response.data);
       localStorage.setItem("token", response.data.token);
       alert("Login successful!");
       navigate("/home");
     } catch (err) {
-      console.error("❌ Login Error:", err.response?.data?.message || err.message);
       setError(err.response?.data?.message || "Invalid credentials");
     }
-  };
-
-  // Framer Motion variants for form and info box animations
-  const containerVariant = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
   };
 
   return (
     <Box
       sx={{
-        minHeight: "100vh",
-        ...movingBackground,
+        margin: 0,
+        height: "100vh",
         display: "flex",
-        alignItems: "center",
         justifyContent: "center",
-        p: 2,
+        alignItems: "center",
+        backgroundColor: "#1B2A41",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <Container maxWidth="md">
-        <Paper
-          elevation={8}
-          sx={{
-            p: { xs: 3, md: 6 },
-            borderRadius: 3,
-            backdropFilter: "blur(8px)",
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
+      {[...Array(30)].map((_, i) => (
+        <Typography
+          key={i}
+          style={{
+            position: "absolute",
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            color: "rgba(255, 255, 255, 0.5)",
+            fontSize: `${2 + Math.random()}rem`,
+            fontWeight: "bold",
+            animation: `${floatAnimation} ${3 + Math.random()}s ease-in-out infinite alternate`,
           }}
-          component={motion.div}
-          initial="hidden"
-          animate="visible"
-          variants={containerVariant}
         >
-          <Grid container spacing={4}>
-            {/* Info/Attraction Section */}
-            <Grid
-              item
-              xs={12}
-              md={6}
+          {investorSymbols[i % investorSymbols.length]}
+        </Typography>
+      ))}
+      <Container maxWidth="sm">
+        <Paper elevation={6} sx={{ p: 4, borderRadius: 3, textAlign: "center", background: "rgba(255, 255, 255, 0.2)", backdropFilter: "blur(10px)" }}>
+          <Typography variant="h4" gutterBottom color="#FFF">
+            Login
+          </Typography>
+          <Box component="form" onSubmit={handleSubmit}>
+            <TextField
+              label="Email"
+              name="email"
+              fullWidth
+              required
+              value={formData.email}
+              onChange={handleChange}
               sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRight: { md: "1px solid #ccc" },
-                textAlign: "center",
-                pr: { md: 3 },
+                mb: 2,
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                borderRadius: "5px",
+                '& input': { color: "#000" },
+                '&:hover': { boxShadow: "0px 0px 10px #00A8E8" },
+                '& .MuiInputLabel-root': { opacity: formData.email ? 0 : 1, transition: "opacity 0.3s" }
               }}
-              component={motion.div}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            >
-              <Box
-                component="img"
-                src="https://via.placeholder.com/250x250.png?text=Official+Logo"
-                alt="Official"
-                sx={{ width: { xs: "150px", md: "200px" }, mb: 2, borderRadius: "50%" }}
-              />
-              <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1, color: "#0B3D91" }}>
-                Official Portal
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 2, color: "#333" }}>
-                Welcome to our official platform where you can securely manage your account,
-                access exclusive content, and stay updated with the latest information.
-              </Typography>
-            </Grid>
-
-            {/* Login Form Section */}
-            <Grid
-              item
-              xs={12}
-              md={6}
+            />
+            <TextField
+              label="Password"
+              name="password"
+              type="password"
+              fullWidth
+              required
+              value={formData.password}
+              onChange={handleChange}
               sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                pl: { md: 3 },
+                mb: 2,
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                borderRadius: "5px",
+                '& input': { color: "#000" },
+                '&:hover': { boxShadow: "0px 0px 10px #00A8E8" },
+                '& .MuiInputLabel-root': { opacity: formData.password ? 0 : 1, transition: "opacity 0.3s" }
               }}
-              component={motion.div}
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+            />
+            {error && <Typography variant="body2" color="error" sx={{ mb: 2 }}>{error}</Typography>}
+            <Button
+              variant="contained"
+              type="submit"
+              fullWidth
+              sx={{
+                backgroundColor: "#00A8E8",
+                color: "#FFF",
+                transition: "all 0.3s",
+                '&:hover': { backgroundColor: "#0077B6", transform: "scale(1.05)" },
+              }}
             >
-              <Typography
-                variant="h4"
-                align="center"
-                gutterBottom
-                sx={{ fontWeight: "bold", color: "#0B3D91" }}
-              >
-                Login
-              </Typography>
-              <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-                <TextField
-                  label="Email"
-                  name="email"
-                  type="email"
-                  fullWidth
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  sx={{ mb: 3 }}
-                />
-                <TextField
-                  label="Password"
-                  name="password"
-                  type="password"
-                  fullWidth
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  sx={{ mb: 3 }}
-                />
-                {error && (
-                  <Typography variant="body2" color="error" sx={{ mb: 2, textAlign: "center" }}>
-                    {error}
-                  </Typography>
-                )}
-                <Button
-                  variant="contained"
-                  type="submit"
-                  fullWidth
-                  sx={{
-                    py: 1.5,
-                    backgroundColor: "#DAA520",
-                    fontWeight: "bold",
-                    "&:hover": { backgroundColor: "#c5943b" },
-                  }}
-                >
-                  Login
-                </Button>
-              </Box>
-              <Box sx={{ mt: 2, textAlign: "center" }}>
-                <Typography variant="body2">
-                  <Link to="/forgot-password" style={{ textDecoration: "none", color: "#0B3D91" }}>
-                    Forgot your password?
-                  </Link>
-                </Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>
-                  Don't have an account?{" "}
-                  <Link
-                    to="/signup"
-                    style={{ textDecoration: "none", color: "#0B3D91", fontWeight: "bold" }}
-                  >
-                    Register here
-                  </Link>
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
+              Login
+            </Button>
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2">
+              <Link to="/forgot-password" style={{ color: "#FFF" }}>Forgot your password?</Link>
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              Don't have an account? <Link to="/signup" style={{ color: "#FFF" }}>Register here</Link>
+            </Typography>
+          </Box>
         </Paper>
       </Container>
     </Box>
