@@ -21,6 +21,8 @@ const RegisterInvestor = () => {
     previousFranchiseExperience: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     setFormData({
@@ -29,31 +31,29 @@ const RegisterInvestor = () => {
     });
   };
 
-  const nextStep = () => {
-    setStep(step + 1);
-  };
-
-  const prevStep = () => {
-    setStep(step - 1);
-  };
+  const nextStep = () => setStep((prevStep) => prevStep + 1);
+  const prevStep = () => setStep((prevStep) => prevStep - 1);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage(""); // Clear previous errors
 
     const data = new FormData();
 
     // Append all fields to FormData
     for (const key in formData) {
-      if (formData[key] !== null && formData[key] !== undefined) {
+      if (formData[key]) {
         data.append(key, formData[key]);
       }
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/investor", {
+      const response = await fetch("http://localhost:5000/api/investors", {
         method: "POST",
-        body: data, // FormData is sent as the body
+        body: data, // Sending FormData
       });
+
+      const responseData = await response.json(); // Parse response JSON
 
       if (response.ok) {
         alert("Registration successful! You will receive a confirmation email.");
@@ -77,17 +77,19 @@ const RegisterInvestor = () => {
           previousFranchiseExperience: "",
         });
       } else {
-        alert("Registration failed. Please try again.");
+        setErrorMessage(responseData.message || "Registration failed. Please try again.");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred. Please try again.");
+      setErrorMessage("An error occurred. Please check your internet connection and try again.");
     }
   };
 
   return (
     <div>
       <h1>Investor Registration</h1>
+      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>} {/* Show error message */}
+
       <form onSubmit={handleSubmit}>
         {step === 1 && (
           <div>
@@ -103,16 +105,11 @@ const RegisterInvestor = () => {
             <input
               type="date"
               name="dob"
-              placeholder="Date of Birth"
               value={formData.dob}
               onChange={handleChange}
               required
             />
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-            >
+            <select name="gender" value={formData.gender} onChange={handleChange} required>
               <option value="">Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -130,6 +127,7 @@ const RegisterInvestor = () => {
               type="file"
               name="profilePicture"
               onChange={handleChange}
+              accept="image/*"
             />
             <button type="button" onClick={nextStep}>
               Next
@@ -208,12 +206,7 @@ const RegisterInvestor = () => {
               onChange={handleChange}
               required
             />
-            <select
-              name="franchiseType"
-              value={formData.franchiseType}
-              onChange={handleChange}
-              required
-            >
+            <select name="franchiseType" value={formData.franchiseType} onChange={handleChange} required>
               <option value="">Select Franchise Type</option>
               <option value="single-unit">Single Unit</option>
               <option value="multi-unit">Multi-Unit</option>
