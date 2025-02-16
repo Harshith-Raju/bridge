@@ -1,373 +1,460 @@
-import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  IconButton,
-  Container,
-  Grid,
-  Paper,
+import { useState, useEffect } from 'react';
+import { 
   AppBar,
   Toolbar,
-  CssBaseline,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
-import { FaSun, FaMoon } from "react-icons/fa";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import { motion, AnimatePresence } from "framer-motion";
+  Typography,
+  Button,
+  Grid,
+  Card,
+  CardContent,
+  Container,
+  Box,
+  createTheme,
+  ThemeProvider,
+  Fade,
+  Slide,
+  IconButton,
+  Avatar
+} from '@mui/material';
+import { Email, Phone, LinkedIn, Twitter, Instagram, Brightness4, Brightness7 } from '@mui/icons-material'; // Icons for footer and dark mode toggle
+import { keyframes } from '@mui/system';
+import Confetti from 'react-confetti'; // For the surprise page
+import useSound from 'use-sound'; // For sound effects
+import soundEffect from './background-sound.mp3'; // Add a sound file to your project
 
-// Replace these URLs with your preferred 4K HD image URLs
-const slideshowImages = [
- "https://www.shutterstock.com/image-photo/do-more-repeat-motivational-quotes-600nw-1935432616.jpg",
-  "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=3840&q=80",
-  "https://images.unsplash.com/photo-1544764200-d834fd210a23?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bW90aXZhdGlvbmFsfGVufDB8fDB8fHww",
+// Sample images for the slideshow
+const slides = [
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwKqPI03K75iMuvHamtGb-Yc0us9DVvmo0XA&s',
+  'https://image.slidesdocs.com/responsive-images/background/4k-animated-animation-of-blue-triangles-powerpoint-background_9fd795d206__960_540.jpg',
+  'https://static.vecteezy.com/system/resources/thumbnails/023/886/037/small_2x/electric-dreamscape-neon-mountains-ai-generated-photo.jpeg',
 ];
 
-// Utility function for smooth scrolling to sections
-const scrollToSection = (id) => {
-  const element = document.getElementById(id);
-  if (element) {
-    element.scrollIntoView({ behavior: "smooth" });
-  }
-};
+// Sample images for team members
+const teamMembers = [
+  { name: 'Harshith Raju', image: 'https://via.placeholder.com/100' },
+  { name: 'Tharunee', image: 'https://via.placeholder.com/100' },
+  { name: 'Lakshitha', image: 'https://via.placeholder.com/100' },
+  { name: 'Neelima', image: 'https://via.placeholder.com/100' },
+  { name: 'Rajitha', image: 'https://via.placeholder.com/100' },
+  { name: 'Tharun', image: 'https://via.placeholder.com/100' },
+];
+
+// Keyframes for moving icons
+const moveIcons = keyframes`
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+  100% { transform: translateY(0) rotate(360deg); }
+`;
+
+// Create a custom theme
+const getTheme = (mode) => createTheme({
+  palette: {
+    mode,
+    primary: {
+      main: mode === 'dark' ? '#90caf9' : '#007bff', // Light blue for dark mode, blue for light mode
+    },
+    secondary: {
+      main: mode === 'dark' ? '#f48fb1' : '#0056b3', // Pink for dark mode, darker blue for light mode
+    },
+    background: {
+      default: mode === 'dark' ? '#121212' : '#f8f9fa', // Dark background for dark mode, light gray for light mode
+      paper: mode === 'dark' ? '#1e1e1e' : '#ffffff',   // Slightly lighter dark for dark mode, white for light mode
+    },
+    text: {
+      primary: mode === 'dark' ? '#ffffff' : '#333333', // White text for dark mode, dark text for light mode
+      secondary: mode === 'dark' ? '#b0b0b0' : '#666666', // Light gray text for dark mode, gray text for light mode
+    },
+  },
+  typography: {
+    fontFamily: 'Arial, sans-serif',
+    h1: {
+      fontSize: '48px',
+      fontWeight: 'bold',
+    },
+    h6: {
+      fontWeight: 'bold',
+    },
+  },
+});
 
 const LandingPage = () => {
-  const [darkTheme, setDarkTheme] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [navShadow, setNavShadow] = useState('0 2px 5px rgba(0,0,0,0.1)');
+  const [activeSection, setActiveSection] = useState('home');
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [darkMode, setDarkMode] = useState(true);
+  const [expandedCard, setExpandedCard] = useState(null); // Track expanded card for "Read More"
+  const [showSurprise, setShowSurprise] = useState(false); // For the surprise page
+  const [playSound] = useSound(soundEffect); // Sound effect
 
-  // Cycle through slideshow images every 5 seconds
+  // Handle scroll for nav shadow and active section
+  useEffect(() => {
+    const handleScroll = () => {
+      setNavShadow(window.scrollY > 50 
+        ? '0 2px 10px rgba(0,0,0,0.1)' 
+        : '0 2px 5px rgba(0,0,0,0.1)'
+      );
+
+      const sections = ['home', 'about', 'services', 'team'];
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element && window.scrollY >= element.offsetTop - 100) {
+          setActiveSection(section);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Auto-slide effect
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slideshowImages.length);
-    }, 5000);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000); // Change slide every 5 seconds
     return () => clearInterval(interval);
   }, []);
 
-  const toggleTheme = () => setDarkTheme((prev) => !prev);
-  const toggleDrawer = () => setDrawerOpen((prev) => !prev);
-
-  // Royal-style color palette (adjusted for a more classic look)
-  const themeColors = {
-    headerBg: darkTheme ? "#1A1A1A" : "#0B3D91",
-    headerText: darkTheme ? "#F8F8FF" : "#FFFFFF",
-    bodyBg: darkTheme ? "#0A192F" : "#FFFFFF",
-    text: darkTheme ? "#FFFFFF" : "#333333",
-    accent: darkTheme ? "#F0C987" : "#DAA520", // Light gold vs gold
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+      setActiveSection(sectionId);
+    }
   };
 
-  // Variants for scroll-triggered animations
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const handleReadMore = (index) => {
+    setExpandedCard(expandedCard === index ? null : index);
+  };
+
+  const handleSurprise = () => {
+    setShowSurprise(true);
+    playSound(); // Play sound effect
+    setTimeout(() => setShowSurprise(false), 5000); // Hide surprise after 5 seconds
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        backgroundColor: themeColors.bodyBg,
-        color: themeColors.text,
-        position: "relative",
-        overflowX: "hidden",
-        scrollBehavior: "smooth",
-      }}
-    >
-      <CssBaseline />
+    <ThemeProvider theme={getTheme(darkMode ? 'dark' : 'light')}>
+      {/* Surprise Page */}
+      {showSurprise && (
+        <Box sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 9999,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        }}>
+          <Confetti width={window.innerWidth} height={window.innerHeight} />
+          <Typography variant="h1" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+            🎉 Surprise! 🎉
+          </Typography>
+        </Box>
+      )}
 
-      {/* ===== Header with Logo and Navigation ===== */}
-      <AppBar
-        position="fixed"
-        sx={{
-          background: themeColors.headerBg,
-          boxShadow: "0px 2px 4px rgba(0,0,0,0.2)",
-          transition: "background 0.3s ease",
+      <AppBar 
+        position="fixed" 
+        sx={{ 
+          backgroundColor: 'background.paper', 
+          boxShadow: navShadow,
+          color: 'text.primary',
+          transition: 'box-shadow 0.3s ease'
         }}
       >
-        <Toolbar>
-          {/* Logo Image */}
-          <Box
-            component="img"
-            src="https://via.placeholder.com/40x40.png?text=Logo"
-            alt="Logo"
-            sx={{ mr: 2, borderRadius: "50%", border: `2px solid ${themeColors.accent}` }}
-          />
-          <Typography
-            variant="h6"
-            sx={{
-              flexGrow: 1,
-              fontWeight: "bold",
-              cursor: "pointer",
-              letterSpacing: "0.5px",
-              color: themeColors.headerText,
-            }}
-            onClick={() => scrollToSection("home")}
-          >
-            Franchise Bridge
-          </Typography>
-          {/* Navigation links for larger screens */}
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {["home", "about", "features", "contact"].map((section) => (
+        <Toolbar sx={{ justifyContent: 'space-between', px: 5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <img 
+              src="https://via.placeholder.com/40" 
+              alt="Logo" 
+              style={{ borderRadius: '50%' }} 
+            />
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              Franchise Bridge
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {['home', 'about', 'services', 'team'].map((item) => (
               <Button
-                key={section}
-                color="inherit"
-                onClick={() => scrollToSection(section)}
-                sx={{ fontWeight: "bold" }}
+                key={item}
+                onClick={() => scrollToSection(item)}
+                sx={{
+                  color: activeSection === item ? 'primary.main' : 'inherit',
+                  textTransform: 'none',
+                  '&:hover': { 
+                    color: 'primary.main',
+                    transform: 'scale(1.1)',
+                    transition: 'transform 0.3s ease'
+                  }
+                }}
               >
-                {section.charAt(0).toUpperCase() + section.slice(1)}
+                {item.charAt(0).toUpperCase() + item.slice(1)}
               </Button>
             ))}
-            <IconButton onClick={toggleTheme} color="inherit" sx={{ ml: 2 }}>
-              {darkTheme ? <FaSun /> : <FaMoon />}
+            <IconButton onClick={toggleDarkMode} sx={{ color: 'primary.main' }}>
+              {darkMode ? <Brightness7 /> : <Brightness4 />}
             </IconButton>
-          </Box>
-          {/* Mobile menu */}
-          <Box sx={{ display: { xs: "block", sm: "none" } }}>
-            <IconButton onClick={toggleTheme} color="inherit">
-              {darkTheme ? <FaSun /> : <FaMoon />}
-            </IconButton>
-            <Button onClick={toggleDrawer} color="inherit">
-              Menu
+            <Button onClick={handleSurprise} variant="contained" color="secondary">
+              Surprise Me!
             </Button>
           </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Mobile Drawer */}
-      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer}>
-        <List sx={{ width: 250, backgroundColor: darkTheme ? "#1A1A1A" : "#FFFFFF" }}>
-          {["Home", "About", "Features", "Contact"].map((text) => (
-            <ListItem
-              button
-              key={text}
-              onClick={() => {
-                scrollToSection(text.toLowerCase());
-                toggleDrawer();
-              }}
-            >
-              <ListItemText primary={text} sx={{ color: darkTheme ? "#FFFFFF" : "#000000" }} />
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-
-      {/* ===== Hero Section with Automated Slideshow ===== */}
-      <Box id="home" sx={{ height: "100vh", position: "relative", overflow: "hidden" }}>
-        <AnimatePresence exitBeforeEnter>
-          <motion.div
-            key={currentSlide}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundImage: `url(${slideshowImages[currentSlide]})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          />
-        </AnimatePresence>
-        {/* Overlay for content */}
-        <Box
-          sx={{
-            position: "absolute",
+      <Box component="main" sx={{ pt: 15 }}>
+        {/* Home Section with Triangle Shape Slideshow */}
+        <Box id="home" sx={{ 
+          position: 'relative',
+          height: '600px',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          textAlign: 'center',
+          clipPath: 'polygon(0 0, 100% 0, 50% 100%, 0 0)', // Triangle shape
+          background: darkMode 
+            ? 'linear-gradient(135deg, #121212 50%, #1e1e1e 50%)' 
+            : 'linear-gradient(135deg, #f8f9fa 50%, #ffffff 50%)', // Gradient background
+        }}>
+          {/* Slideshow Background */}
+          <Box sx={{
+            position: 'absolute',
             top: 0,
             left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0,0,0,0.5)",
-          }}
-        />
-        {/* Hero Content */}
-        <Container
-          sx={{
-            position: "relative",
+            width: '100%',
+            height: '100%',
+            zIndex: -1,
+            backgroundImage: `url(${slides[currentSlide]})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            transition: 'background-image 1s ease',
+            clipPath: 'polygon(0 0, 100% 0, 50% 100%, 0 0)', // Triangle shape
+          }} />
+          {/* Overlay */}
+          <Box sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 0,
+            clipPath: 'polygon(0 0, 100% 0, 50% 100%, 0 0)', // Triangle shape
+          }} />
+          {/* Moving Icons Around the Triangle */}
+          <Box sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
             zIndex: 1,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            color: "#FFFFFF",
-            px: 2,
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: -50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-          >
-            <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2, letterSpacing: "1px" }}>
-              Connecting Opportunities, Building Success
-            </Typography>
-            <Typography variant="h6" sx={{ mb: 4 }}>
-              Discover and manage franchise opportunities with ease.
-            </Typography>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => (window.location.href = "/login1")}
-              sx={{
-                backgroundColor: themeColors.accent,
-                color: "#FFFFFF",
-                borderRadius: "25px",
-                px: 4,
-                py: 1.5,
-                fontWeight: "bold",
-                boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
-                "&:hover": {
-                  backgroundColor: darkTheme ? "#e0b270" : "#c5943b",
-                },
-              }}
-            >
-              Get Started
-            </Button>
-          </motion.div>
-          {/* Scroll Down Arrow */}
- <Box sx={{ position: "absolute", bottom: 20, cursor: "pointer" }} onClick={() => scrollToSection("about")}>
-            <ArrowDownwardIcon sx={{ color: "#FFFFFF", fontSize: 40 }} />
+            overflow: 'hidden',
+          }}>
+            {[Email, Phone, LinkedIn, Twitter, Instagram].map((Icon, index) => (
+              <Icon key={index} sx={{
+                position: 'absolute',
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                fontSize: '2rem',
+                color: 'primary.main',
+                animation: `${moveIcons} 5s infinite ${index}s`,
+              }} />
+            ))}
           </Box>
-        </Container>
+          {/* Content */}
+          <Fade in={true} timeout={1000}>
+            <Container maxWidth="md" sx={{ zIndex: 2 }}>
+              <Typography variant="h1" sx={{ mb: 4, fontWeight: 'bold' }}>
+                Welcome to Franchise Bridge
+              </Typography>
+              <Typography sx={{ 
+                fontSize: '1.2rem',
+                lineHeight: 1.6,
+                mb: 5
+              }}>
+                Uit velit est quam dolor ad a aliquid qui aliquid. Sequi es ut et est quarent sepul nihil
+                ut aliquam. Occaeceiti alias dolorem mollitis ut. Similique es voluptatem. Esse
+                doloremque accusamus repellendus deleniti vel. Minus et tempore modi architecto.
+              </Typography>
+              <Button 
+                variant="contained" 
+                size="large"
+                sx={{ 
+                  px: 4, 
+                  py: 1.5, 
+                  borderRadius: 1,
+                  backgroundColor: 'primary.main',
+                  '&:hover': { 
+                    backgroundColor: 'secondary.main',
+                    transform: 'scale(1.05)',
+                    transition: 'transform 0.3s ease'
+                  }
+                }}
+              >
+                Read More
+              </Button>
+            </Container>
+          </Fade>
+        </Box>
+
+        {/* About Section */}
+        <Box id="about" sx={{ py: 10, px: 5, backgroundColor: 'background.paper' }}>
+          <Slide in={true} direction="up" timeout={1000}>
+            <Container>
+              <Typography variant="h2" sx={{ mb: 4, textAlign: 'center', color: 'text.primary' }}>
+                About Us
+              </Typography>
+              <Typography sx={{ color: 'text.secondary', textAlign: 'center', maxWidth: '800px', mx: 'auto' }}>
+                We are a team of dedicated professionals committed to helping businesses grow through franchising. Our mission is to bridge the gap between franchisors and franchisees.
+              </Typography>
+            </Container>
+          </Slide>
+        </Box>
+
+        {/* Services Section */}
+        <Box id="services" sx={{ py: 10, px: 5, backgroundColor: 'background.default' }}>
+          <Container>
+            <Typography variant="h2" sx={{ mb: 4, textAlign: 'center', color: 'text.primary' }}>
+              Our Services
+            </Typography>
+            <Grid container spacing={4}>
+              {['Nesciunt Mete', 'Eosie Commodi', 'Ledo Markt', 'Asperiores'].map((service, index) => (
+                <Grid item xs={12} md={3} key={service}>
+                  <Fade in={true} timeout={1000 + index * 500}>
+                    <Card sx={{ 
+                      textAlign: 'center',
+                      p: 3,
+                      boxShadow: '0 2px 15px rgba(0,0,0,0.1)',
+                      borderRadius: 2,
+                      backgroundColor: 'background.paper',
+                      '&:hover': {
+                        transform: 'translateY(-10px)',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                        transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                      }
+                    }}>
+                      <CardContent>
+                        <Typography variant="h6" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                          {service}
+                        </Typography>
+                        {expandedCard === index ? (
+                          <Typography sx={{ color: 'text.secondary', mt: 2 }}>
+                            Additional details about {service}. This is a placeholder for more information.
+                          </Typography>
+                        ) : (
+                          <Button 
+                            onClick={() => handleReadMore(index)}
+                            sx={{ 
+                              mt: 2,
+                              color: 'primary.main',
+                              '&:hover': { 
+                                color: 'secondary.main',
+                                transform: 'scale(1.05)',
+                                transition: 'transform 0.3s ease'
+                              }
+                            }}
+                          >
+                            Read More
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Fade>
+                </Grid>
+              ))}
+            </Grid>
+          </Container>
+        </Box>
+
+        {/* Team Section */}
+        <Box id="team" sx={{ py: 10, px: 5, backgroundColor: 'background.paper' }}>
+          <Slide in={true} direction="up" timeout={1000}>
+            <Container>
+              <Typography variant="h2" sx={{ mb: 4, textAlign: 'center', color: 'text.primary' }}>
+                Our Team
+              </Typography>
+              <Grid container spacing={4}>
+                {teamMembers.map((member, index) => (
+                  <Grid item xs={12} md={4} key={member.name}>
+                    <Fade in={true} timeout={1000 + index * 500}>
+                      <Card sx={{ 
+                        textAlign: 'center',
+                        p: 3,
+                        boxShadow: '0 2px 15px rgba(0,0,0,0.1)',
+                        borderRadius: 2,
+                        backgroundColor: 'background.default',
+                        '&:hover': {
+                          transform: 'translateY(-10px)',
+                          boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                          transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                        }
+                      }}>
+                        <CardContent>
+                          <Avatar 
+                            src={member.image} 
+                            alt={member.name} 
+                            sx={{ width: 100, height: 100, mx: 'auto', mb: 2 }}
+                          />
+                          <Typography variant="h6" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                            {member.name}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Fade>
+                  </Grid>
+                ))}
+              </Grid>
+            </Container>
+          </Slide>
+        </Box>
       </Box>
 
-      {/* ===== About Section (Scroll-triggered Animation) ===== */}
-      <Container id="about" sx={{ py: 8 }}>
-        <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <Typography variant="h4" sx={{ textAlign: "center", mb: 4, fontWeight: "bold" }}>
-            About Us
-          </Typography>
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <Paper
-                elevation={3}
-                sx={{
-                  p: 3,
-                  backgroundColor: darkTheme ? "#1A1A1A" : "#F0F0F0",
-                }}
-              >
-                <Typography variant="body1">
-                  Franchise Bridge is your trusted partner in discovering the best franchise opportunities. With an extensive database and expert insights, we help entrepreneurs and established businesses connect and grow together.
-                </Typography>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Paper
-                elevation={3}
-                sx={{
-                  p: 3,
-                  backgroundColor: darkTheme ? "#1A1A1A" : "#F0F0F0",
-                }}
-              >
-                <Typography variant="body1">
-                  Our platform offers interactive tools, personalized recommendations, and in-depth market analyses to ensure you make informed decisions. Join us on a journey of growth and success.
-                </Typography>
-              </Paper>
-            </Grid>
-          </Grid>
-        </motion.div>
-      </Container>
-
-      {/* ===== Features Section (Scroll-triggered Animation) ===== */}
-      <Container id="features" sx={{ py: 8, backgroundColor: darkTheme ? "#0A192F" : "#F7F7F7" }}>
-        <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <Typography variant="h4" sx={{ textAlign: "center", mb: 4, fontWeight: "bold" }}>
-            Features
-          </Typography>
-          <Grid container spacing={4}>
-            {[
-              "Extensive Franchise Database",
-              "Expert Guidance & Insights",
-              "Interactive Tools",
-              "Networking Opportunities",
-            ].map((feature, idx) => (
-              <Grid item xs={12} sm={6} md={3} key={idx}>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Paper
-                    elevation={4}
-                    sx={{
-                      p: 3,
-                      textAlign: "center",
-                      backgroundColor: darkTheme ? "#1A1A1A" : "#FFFFFF",
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
-                      {feature.split(" ")[0]}
-                    </Typography>
-                    <Typography variant="body2">{feature}</Typography>
-                  </Paper>
-                </motion.div>
-              </Grid>
-            ))}
-          </Grid>
-        </motion.div>
-      </Container>
-
-      {/* ===== Contact Section (Scroll-triggered Animation) ===== */}
-      <Container id="contact" sx={{ py: 8 }}>
-        <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <Typography variant="h4" sx={{ textAlign: "center", mb: 4, fontWeight: "bold" }}>
+      {/* Footer with Contact Section */}
+      <Box component="footer" sx={{ 
+        py: 10, 
+        px: 5, 
+        backgroundColor: 'background.default',
+        borderTop: '1px solid rgba(255, 255, 255, 0.12)'
+      }}>
+        <Container>
+          <Typography variant="h2" sx={{ mb: 4, textAlign: 'center', color: 'text.primary' }}>
             Contact Us
           </Typography>
-          <Grid container spacing={4} justifyContent="center">
-            <Grid item xs={12} md={6}>
-              <Paper
-                elevation={3}
-                sx={{
-                  p: 3,
-                  backgroundColor: darkTheme ? "#1A1A1A" : "#F0F0F0",
-                }}
-              >
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  Have questions or need assistance? Reach out to us!
-                </Typography>
-                <Typography variant="body2">Email: support@franchisebridge.com</Typography>
-                <Typography variant="body2">Phone: +1 (555) 123-4567</Typography>
-              </Paper>
-            </Grid>
-          </Grid>
-        </motion.div>
-      </Container>
-
-      {/* ===== Footer ===== */}
-      <Box
-        component="footer"
-        sx={{
-          backgroundColor: themeColors.headerBg,
-          color: themeColors.headerText,
-          textAlign: "center",
-          py: 3,
-          mt: 4,
-        }}
-      >
-        <Typography variant="body2">
-          © {new Date().getFullYear()} Franchise Bridge. All rights reserved.
-        </Typography>
+          <Typography sx={{ color: 'text.secondary', textAlign: 'center', mb: 4 }}>
+            Reach out to us for any inquiries or collaborations.
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mb: 4 }}>
+            <IconButton sx={{ color: 'primary.main' }}>
+              <Email />
+            </IconButton>
+            <IconButton sx={{ color: 'primary.main' }}>
+              <Phone />
+            </IconButton>
+            <IconButton sx={{ color: 'primary.main' }}>
+              <LinkedIn />
+            </IconButton>
+            <IconButton sx={{ color: 'primary.main' }}>
+              <Twitter />
+            </IconButton>
+            <IconButton sx={{ color: 'primary.main' }}>
+              <Instagram />
+            </IconButton>
+          </Box>
+          <Typography sx={{ color: 'text.secondary', textAlign: 'center', fontSize: '0.9rem' }}>
+            © 2023 Franchise Bridge. All rights reserved.
+          </Typography>
+        </Container>
       </Box>
-    </Box>
+    </ThemeProvider>
   );
 };
 

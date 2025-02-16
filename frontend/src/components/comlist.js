@@ -1,191 +1,148 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import {
-  Container,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  Chip,
-  CircularProgress,
-  Alert,
-  Box,
-  Rating,
-  TextField,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
-import { StarBorder } from "@mui/icons-material";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { 
+  Container, Typography, Grid, Card, CardContent, Chip, 
+  Button, TextField, Box, MenuItem, Select, 
+  FormControl, InputLabel 
+} from '@mui/material';
 
 const ComList = () => {
   const [businesses, setBusinesses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedBusiness, setSelectedBusiness] = useState(null);
-  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
-  const [reviewText, setReviewText] = useState("");
-  const [rating, setRating] = useState(0);
+  const [search, setSearch] = useState(''); // Search query
+  const [sortOrder, setSortOrder] = useState('none'); // Sorting state: 'none', 'asc', 'desc'
+  const [industryFilter, setIndustryFilter] = useState('All'); // Industry filter
 
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/businesses");
-        const approvedBusinesses = response.data.filter(
-          (business) => business.status === "approved"
-        );
-        setBusinesses(approvedBusinesses);
+        const response = await axios.get('http://localhost:5000/api/businesses');
+        setBusinesses(response.data);
+        console.log("Fetched Businesses:", response.data); // Debugging log
       } catch (error) {
-        setError("Failed to fetch businesses. Please try again.");
-      } finally {
-        setLoading(false);
+        console.error('Error fetching data:', error);
       }
     };
 
     fetchBusinesses();
   }, []);
 
-  const handleReviewDialogOpen = (business) => {
-    setSelectedBusiness(business);
-    setReviewDialogOpen(true);
+  // Extract unique industries from business data
+  const uniqueIndustries = [...new Set(businesses.map((b) => b.industry?.trim()).filter(Boolean))];
+
+  // Filter businesses to only include approved companies and match search query and industry
+  const filteredBusinesses = businesses.filter((business) => {
+    const isApproved = business.status?.trim().toLowerCase() === 'approved';
+    const matchesSearch = (business.companyName || 'No Company Name').toLowerCase().includes(search.toLowerCase());
+    const matchesIndustry = industryFilter === 'All' || business.industry === industryFilter;
+    return isApproved && matchesSearch && matchesIndustry;
+  });
+
+  // Extract numeric investment values from ranges like "₹10L - ₹20L"
+  const extractInvestmentValue = (investmentRange) => {
+    if (!investmentRange) return 0;
+    const match = investmentRange.match(/\d+/g); // Extract numbers
+    return match ? parseInt(match[0], 10) : 0; // Use the first number as sorting value
   };
 
-  const handleReviewDialogClose = () => {
-    setReviewDialogOpen(false);
-    setReviewText("");
-    setRating(0);
-  };
+  // Sort businesses based on investment range
+  const sortedBusinesses = [...filteredBusinesses].sort((a, b) => {
+    const investmentA = extractInvestmentValue(a.investmentRange);
+    const investmentB = extractInvestmentValue(b.investmentRange);
 
-  const handleReviewSubmit = async () => {
-    if (!selectedBusiness || !reviewText || rating === 0) return;
-
-    try {
-      const response = await axios.post(
-        `http://localhost:5000/api/businesses/${selectedBusiness._id}/reviews`,
-        { text: reviewText, rating }
-      );
-      const updatedBusinesses = businesses.map((business) =>
-        business._id === selectedBusiness._id
-          ? { ...business, reviews: [...(business.reviews || []), response.data] }
-          : business
-      );
-      setBusinesses(updatedBusinesses);
-      handleReviewDialogClose();
-    } catch (error) {
-      console.error("Error submitting review:", error);
-    }
-  };
+    if (sortOrder === 'asc') return investmentA - investmentB;
+    if (sortOrder === 'desc') return investmentB - investmentA;
+    return 0;
+  });
 
   return (
-    <Container sx={{ paddingY: 4 }}>
-      <Typography variant="h4" gutterBottom align="center">
-        Approved Business List
+    <Container>
+      <Typography variant="h4" gutterBottom>
+        Business List
       </Typography>
 
-      {loading ? (
-        <Box display="flex" justifyContent="center" mt={3}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Alert severity="error">{error}</Alert>
-      ) : (
-        <Grid container spacing={3}>
-          {businesses.length > 0 ? (
-            businesses.map((business) => (
-              <Grid item xs={12} sm={6} md={4} key={business._id}>
-                <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
-                  <CardContent>
-                    <Typography variant="h5" fontWeight="bold">
-                      {business.title}
-                    </Typography>
-                    <Typography color="textSecondary">
-                      Reg No: {business.registrationNumber}
-                    </Typography>
+      {/* Search, Industry Selection & Sorting */}
+      <Box sx={{ display: 'flex', gap: 2, marginBottom: 3, flexWrap: 'wrap' }}>
+        {/* Search Bar */}
+        <TextField 
+          label="Search by Company Name" 
+          variant="outlined" 
+          value={search} 
+          onChange={(e) => setSearch(e.target.value)} 
+          sx={{ flex: 1, minWidth: 250 }}
+        />
+
+        {/* Industry Filter Dropdown */}
+        <FormControl sx={{ minWidth: 200 }}>
+          <InputLabel>Filter by Industry</InputLabel>
+          <Select
+            value={industryFilter}
+            onChange={(e) => setIndustryFilter(e.target.value)}
+          >
+            <MenuItem value="All">All Industries</MenuItem>
+            {uniqueIndustries.map((industry) => (
+              <MenuItem key={industry} value={industry}>{industry}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* Sorting Dropdown */}
+        <FormControl sx={{ minWidth: 180 }}>
+          <InputLabel>Sort by Investment</InputLabel>
+          <Select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+          >
+            <MenuItem value="none">None</MenuItem>
+            <MenuItem value="asc">Lowest to Highest</MenuItem>
+            <MenuItem value="desc">Highest to Lowest</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Grid container spacing={3}>
+        {sortedBusinesses.length > 0 ? (
+          sortedBusinesses.map((business) => (
+            <Grid item xs={12} sm={6} md={4} key={business._id}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h5">{business.companyName || 'No Company Name'}</Typography>
+                  <Typography color="textSecondary">{business.industry || 'No Industry Available'}</Typography>
+                  <Typography variant="body2">Year Established: {business.yearEstablished || 'N/A'}</Typography>
+                  <Typography variant="body2">Headquarters: {business.headquarters || 'N/A'}</Typography>
+                  <Typography variant="body2">Website: {business.website || 'No Website Available'}</Typography>
+                  <Typography variant="body2">Franchise Name: {business.franchiseName || 'N/A'}</Typography>
+                  <Typography variant="body2">Franchise Description: {business.franchiseDescription || 'N/A'}</Typography>
+                  <Typography variant="body2">Investment Range: {business.investmentRange || 'N/A'}</Typography>
+                  <Typography variant="body2">Franchise Fee: {business.franchiseFee || 'N/A'}</Typography>
+                  <Typography variant="body2">Royalty Fee: {business.royaltyFee || 'N/A'}</Typography>
+                  <Typography variant="body2">Email: {business.email || 'No Email Available'}</Typography>
+                  {business.financialDocuments ? (
                     <Typography variant="body2">
-                      🌐{" "}
-                      <a
-                        href={business.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: "#1565c0", textDecoration: "none" }}
-                      >
-                        {business.website}
+                      <a href={business.financialDocuments} target="_blank" rel="noopener noreferrer">
+                        View Financial Document
                       </a>
                     </Typography>
-                    <Typography variant="body2">📞 {business.phoneNumber}</Typography>
-                    {business.financialDocuments && (
-                      <Typography variant="body2" sx={{ mt: 1 }}>
-                        📂{" "}
-                        <a
-                          href={business.financialDocuments}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: "#2e7d32", textDecoration: "none" }}
-                        >
-                          View Financial Document
-                        </a>
-                      </Typography>
-                    )}
-                    <Chip label="Approved" color="success" sx={{ mt: 2 }} />
-                    <Box sx={{ mt: 2 }}>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={() => handleReviewDialogOpen(business)}
-                      >
-                        Add Review
-                      </Button>
-                    </Box>
-                    {business.reviews && business.reviews.length > 0 && (
-                      <Box sx={{ mt: 2 }}>
-                        <Typography variant="h6">Reviews:</Typography>
-                        {business.reviews.map((review, index) => (
-                          <Box key={index} sx={{ mt: 1 }}>
-                            <Rating value={review.rating} readOnly />
-                            <Typography variant="body2">{review.text}</Typography>
-                          </Box>
-                        ))}
-                      </Box>
-                    )}
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))
-          ) : (
-            <Typography variant="h6" align="center" color="textSecondary">
-              No approved businesses found.
-            </Typography>
-          )}
-        </Grid>
-      )}
-
-      <Dialog open={reviewDialogOpen} onClose={handleReviewDialogClose}>
-        <DialogTitle>Add Review for {selectedBusiness?.title}</DialogTitle>
-        <DialogContent>
-          <Rating
-            value={rating}
-            onChange={(event, newValue) => setRating(newValue)}
-            emptyIcon={<StarBorder fontSize="inherit" />}
-          />
-          <TextField
-            label="Your Review"
-            multiline
-            rows={4}
-            fullWidth
-            value={reviewText}
-            onChange={(e) => setReviewText(e.target.value)}
-            sx={{ mt: 2 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleReviewDialogClose}>Cancel</Button>
-          <Button onClick={handleReviewSubmit} color="primary">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
+                  ) : (
+                    <Typography variant="body2">No Financial Document Available</Typography>
+                  )}
+                  <Typography variant="body2">
+                    Status: 
+                    <Chip 
+                      label={business.status || 'Unknown'} 
+                      color="success" // Since we only show approved companies, the status is always "Approved"
+                      sx={{ marginLeft: 1 }}
+                    />
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))
+        ) : (
+          <Typography variant="h6" sx={{ marginTop: 2, color: 'gray' }}>
+            No approved businesses found for "{search}" under "{industryFilter}" industry.
+          </Typography>
+        )}
+      </Grid>
     </Container>
   );
 };

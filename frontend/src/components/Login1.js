@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
+import { AccountBalance, Business, TrendingUp, Work, Apartment, Description } from '@mui/icons-material';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -14,9 +15,46 @@ const LoginPage = () => {
     navigate('/Logininv');
   };
 
-  // Replace these URLs with your own background images
-  const companyBgImage = 'https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=800&q=80';
-  const investorBgImage = 'https://images.unsplash.com/photo-1554224154-22dec7ec8818?auto=format&fit=crop&w=800&q=80';
+  // Icons and emojis for the floating background
+  const floatingIcons = [
+    { icon: Business, color: "#FF5733" }, // Red-Orange
+    { icon: Work, color: "#33FF57" }, // Green
+    { icon: Apartment, color: "#3380FF" }, // Blue
+    { icon: Description, color: "#FF33D4" }, // Pink
+    { icon: TrendingUp, color: "#FFD700" }, // Gold
+    { icon: "💹", color: "#FF5733" }, // Emoji
+    { icon: "📈", color: "#33FF57" }, // Emoji
+    { icon: "💰", color: "#3380FF" }, // Emoji
+    { icon: "🏦", color: "#FF33D4" }, // Emoji
+    { icon: "📊", color: "#FFD700" }, // Emoji
+  ];
+
+  // Floating Icons Component
+  const FloatingIcons = () => {
+    return (
+      <Box sx={{ position: "absolute", width: "100%", height: "100vh", top: 0, left: 0, overflow: "hidden" }}>
+        {[...Array(30)].map((_, i) => {
+          const { icon, color } = floatingIcons[i % floatingIcons.length];
+          return (
+            <motion.div
+              key={i}
+              animate={{ y: [0, -30, 30, 0], opacity: [0.8, 1, 0.8] }}
+              transition={{ duration: 5, repeat: Infinity, delay: i * 0.2 }}
+              style={{
+                position: "absolute",
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                color,
+                fontSize: typeof icon === 'string' ? '2rem' : '40px', // Adjust size for emojis and icons
+              }}
+            >
+              {typeof icon === 'string' ? icon : React.createElement(icon, { style: { fontSize: 'inherit' } })}
+            </motion.div>
+          );
+        })}
+      </Box>
+    );
+  };
 
   return (
     <Box
@@ -28,15 +66,19 @@ const LoginPage = () => {
         display: 'flex',
         height: '100vh',
         overflow: 'hidden',
+        position: 'relative',
+        backgroundColor: '#143645',
       }}
     >
+      <FloatingIcons />
       {/* Left side for Companies */}
       <Box
+        component={motion.div}
+        initial={{ x: '-100%' }}
+        animate={{ x: 0 }}
+        transition={{ duration: 1 }}
         sx={{
           flex: 1,
-          backgroundImage: `url(${companyBgImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -45,21 +87,21 @@ const LoginPage = () => {
           textAlign: 'center',
           color: '#fff',
           position: 'relative',
+          zIndex: 2,
         }}
       >
-        {/* Optional dark overlay for better text contrast */}
+        {/* Transparent Box for Company */}
         <Box
           sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 1,
+            backgroundColor: 'rgba(255, 255, 255, 0.1)', // Transparent background
+            backdropFilter: 'blur(10px)', // Blur effect
+            borderRadius: '16px', // Rounded corners
+            p: 4,
+            width: '80%',
+            maxWidth: '500px', // Set to match investor box
+            border: '1px solid rgba(255, 255, 255, 0.2)', // Light border
           }}
-        />
-        <Box sx={{ position: 'relative', zIndex: 2, maxWidth: '80%' }}>
+        >
           <Typography variant="h3" sx={{ mb: 2, fontWeight: 'bold' }}>
             For Companies
           </Typography>
@@ -73,11 +115,11 @@ const LoginPage = () => {
               px: 4,
               py: 1.5,
               fontSize: '18px',
-              backgroundColor: '#DAA520',
-              color: '#fff',
+              backgroundColor: '#FFF',
+              color: '#143645',
               borderRadius: '5px',
               textTransform: 'none',
-              '&:hover': { backgroundColor: '#c5943b' },
+              '&:hover': { backgroundColor: '#e0e0e0' },
             }}
           >
             Company Login
@@ -87,11 +129,12 @@ const LoginPage = () => {
 
       {/* Right side for Investors */}
       <Box
+        component={motion.div}
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        transition={{ duration: 1 }}
         sx={{
           flex: 1,
-          backgroundImage: `url(${investorBgImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -100,25 +143,25 @@ const LoginPage = () => {
           textAlign: 'center',
           color: '#fff',
           position: 'relative',
+          zIndex: 2,
         }}
       >
-        {/* Optional dark overlay for better text contrast */}
+        {/* Transparent Box for Investor */}
         <Box
           sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 1,
+            backgroundColor: 'rgba(255, 255, 255, 0.1)', // Transparent background
+            backdropFilter: 'blur(10px)', // Blur effect
+            borderRadius: '16px', // Rounded corners
+            p: 4,
+            width: '80%',
+            maxWidth: '500px', // Set to match company box
+            border: '1px solid rgba(255, 255, 255, 0.2)', // Light border
           }}
-        />
-        <Box sx={{ position: 'relative', zIndex: 2, maxWidth: '80%' }}>
+        >
           <Typography variant="h3" sx={{ mb: 2, fontWeight: 'bold' }}>
             For Investors
           </Typography>
-          <Typography variant="h6" sx={{ mb: 4 }}>
+          <Typography variant="h6" sx={{ mb: 8 }}>
             Discover promising opportunities and connect with innovative companies ready to grow.
           </Typography>
           <Button
@@ -128,11 +171,11 @@ const LoginPage = () => {
               px: 4,
               py: 1.5,
               fontSize: '18px',
-              backgroundColor: '#DAA520',
-              color: '#fff',
+              backgroundColor: '#FFF',
+              color: '#143645',
               borderRadius: '5px',
               textTransform: 'none',
-              '&:hover': { backgroundColor: '#c5943b' },
+              '&:hover': { backgroundColor: '#e0e0e0' },
             }}
           >
             Investor Login

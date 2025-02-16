@@ -21,7 +21,7 @@ const AdminHome = () => {
     { title: "Company List", icon: <Business fontSize="large" />, path: "/businesslist" },
     { title: "Investor List", icon: <MonetizationOn fontSize="large" />, path: "/Investorlist" },
     { title: "User Management", icon: <People fontSize="large" />, path: "/NotifyAdmmin" },
-    { title: "Reports & Analytics", icon: <BarChart fontSize="large" />, path: "/reports" },
+    { title: "Reports & Analytics", icon: <BarChart fontSize="large" />, path: "/dashboard" },
   ];
 
   return (

@@ -11,9 +11,22 @@ import {
   Typography,
 } from "@mui/material";
 import { motion } from "framer-motion";
-import { Business, Work, Apartment, Description, TrendingUp } from "@mui/icons-material";
+import {
+  Business,
+  Work,
+  Apartment,
+  Description,
+  TrendingUp,
+} from "@mui/icons-material";
 
-const companyIcons = [Business, Work, Apartment, Description, TrendingUp];
+// Icons array and their respective colors
+const companyIcons = [
+  { icon: Business, color: "#FF5733" }, // Red-Orange
+  { icon: Work, color: "#33FF57" }, // Green
+  { icon: Apartment, color: "#3380FF" }, // Blue
+  { icon: Description, color: "#FF33D4" }, // Pink
+  { icon: TrendingUp, color: "#FFD700" }, // Gold
+];
 
 const Logincmp = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -48,7 +61,8 @@ const Logincmp = () => {
     }
   };
 
-  const AnimatedIcon = companyIcons[activeIcon];
+  const AnimatedIcon = companyIcons[activeIcon].icon;
+  const activeIconColor = companyIcons[activeIcon].color;
 
   return (
     <Box
@@ -59,12 +73,13 @@ const Logincmp = () => {
         justifyContent: "center",
         p: 2,
         position: "relative",
-        backgroundColor: "#F5F7FA",
+        backgroundColor: "#143645",
         overflow: "hidden",
       }}
     >
+      {/* Floating Background Icons */}
       {[...Array(25)].map((_, i) => {
-        const Icon = companyIcons[i % companyIcons.length];
+        const { icon: Icon, color } = companyIcons[i % companyIcons.length];
         return (
           <motion.div
             key={i}
@@ -74,14 +89,14 @@ const Logincmp = () => {
               position: "absolute",
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              color: "rgba(0, 0, 0, 0.3)",
+              color,
             }}
           >
-            <Icon sx={{ fontSize: 40 }} />
+            <Icon style={{ fontSize: 40 }} />
           </motion.div>
         );
       })}
-      
+
       <Container maxWidth="md">
         <Paper
           elevation={8}
@@ -89,28 +104,61 @@ const Logincmp = () => {
             p: { xs: 3, md: 6 },
             borderRadius: 3,
             backdropFilter: "blur(8px)",
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            backgroundColor: "rgba(255, 255, 255, 0.1)", // Transparent login block
           }}
         >
           <Grid container spacing={4}>
+            {/* Animated Icon + Portal Info */}
             <Grid item xs={12} md={6} sx={{ textAlign: "center", pr: { md: 3 } }}>
               <motion.div animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity }}>
-                <AnimatedIcon sx={{ fontSize: 100, color: "#0B3D91" }} />
+                <AnimatedIcon sx={{ fontSize: 100, color: activeIconColor }} />
               </motion.div>
-              <Typography variant="h5" sx={{ fontWeight: "bold", mt: 2, color: "#0B3D91" }}>
+              <Typography variant="h5" sx={{ fontWeight: "bold", mt: 2, color: "#FFF" }}>
                 Company Portal
               </Typography>
-              <Typography variant="body1" sx={{ mb: 2, color: "#333" }}>
+              <Typography variant="body1" sx={{ mb: 2, color: "#DDD" }}>
                 Securely access your company's dashboard, manage profiles, and track insights.
               </Typography>
             </Grid>
+
+            {/* Login Form */}
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold", color: "#0B3D91" }}>
+              <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold", color: "#FFF" }}>
                 Login
               </Typography>
               <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-                <TextField label="Email" name="email" type="email" fullWidth required value={formData.email} onChange={handleChange} sx={{ mb: 3 }} />
-                <TextField label="Password" name="password" type="password" fullWidth required value={formData.password} onChange={handleChange} sx={{ mb: 3 }} />
+                <TextField
+                  label="Email"
+                  name="email"
+                  type="email"
+                  fullWidth
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  sx={{
+                    mb: 3,
+                    backgroundColor: "rgba(255, 255, 255, 0.9)",
+                    borderRadius: "5px",
+                    "& input": { color: "#000" },
+                    "&:hover": { boxShadow: "0px 0px 10px #00A8E8" },
+                  }}
+                />
+                <TextField
+                  label="Password"
+                  name="password"
+                  type="password"
+                  fullWidth
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  sx={{
+                    mb: 3,
+                    backgroundColor: "rgba(255, 255, 255, 0.9)",
+                    borderRadius: "5px",
+                    "& input": { color: "#000" },
+                    "&:hover": { boxShadow: "0px 0px 10px #00A8E8" },
+                  }}
+                />
                 {error && (
                   <Typography variant="body2" color="error" sx={{ mb: 2, textAlign: "center" }}>
                     {error}
@@ -122,9 +170,10 @@ const Logincmp = () => {
                   fullWidth
                   sx={{
                     py: 1.5,
-                    backgroundColor: "#143645",
+                    backgroundColor: "#00A8E8", // Updated to Blue
+                    color: "#FFF", // Text color White
                     fontWeight: "bold",
-                    "&:hover": { backgroundColor: "#c5943b" },
+                    "&:hover": { backgroundColor: "#0D47A1" }, // Slightly lighter blue on hover
                   }}
                 >
                   Login
@@ -132,13 +181,13 @@ const Logincmp = () => {
               </Box>
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <Typography variant="body2">
-                  <Link to="/forgot-password" style={{ textDecoration: "none", color: "#0B3D91" }}>
+                  <Link to="/forgot-password" style={{ textDecoration: "none", color: "#FFF" }}>
                     Forgot your password?
                   </Link>
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>
-                  Don't have an account?{' '}
-                  <Link to="/signup" style={{ textDecoration: "none", color: "#0B3D91", fontWeight: "bold" }}>
+                <Typography variant="body2" sx={{ mt: 1, color: "#FFF" }}>
+                  Don't have an account?{" "}
+                  <Link to="/signup" style={{ textDecoration: "none", color: "#f5fafc", fontWeight: "bold" }}>
                     Register here
                   </Link>
                 </Typography>

@@ -38,27 +38,29 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div style={{
-      margin: 0,
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "#1B2A41",
-      position: "relative",
-      overflow: "hidden",
-    }}>
+    <div
+      style={{
+        margin: 0,
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#1B2A41",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
       {[...Array(30)].map((_, i) => (
         <Typography
           key={i}
-          style={{
+          sx={{
             position: "absolute",
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
             color: "rgba(255, 255, 255, 0.5)",
             fontSize: `${3 + Math.random()}rem`,
             fontWeight: "bold",
-            animation:`${floatAnimation} ${0.8 + Math.random()}s ease-in-out infinite alternate`,
+            animation: `${floatAnimation} ${3 + Math.random()}s ease-in-out infinite alternate`,
           }}
         >
           ?
@@ -101,7 +103,14 @@ const ForgotPassword = () => {
             <Button
               type="submit"
               variant="contained"
-              sx={{ mt: 2, backgroundColor: "#00A8E8", color: "#FFF" }}
+              sx={{
+                mt: 2,
+                backgroundColor: "#007BFF", // Blue color
+                color: "#FFF",
+                "&:hover": {
+                  backgroundColor: "#0056b3", // Darker blue on hover
+                },
+              }}
               fullWidth
               disabled={loading}
             >
@@ -134,7 +143,14 @@ const ForgotPassword = () => {
             <Button
               type="submit"
               variant="contained"
-              sx={{ mt: 2, backgroundColor: "#00A8E8", color: "#FFF" }}
+              sx={{
+                mt: 2,
+                backgroundColor: "#007BFF", // Blue color
+                color: "#FFF",
+                "&:hover": {
+                  backgroundColor: "#0056b3", // Darker blue on hover
+                },
+              }}
               fullWidth
               disabled={loading}
             >

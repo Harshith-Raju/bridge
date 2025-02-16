@@ -1,139 +1,157 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../api";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { motion } from "framer-motion";
+import { Business, Work, Apartment, Description, TrendingUp } from "@mui/icons-material";
 
-const SignUp = () => {
+const companyIcons = [
+  { icon: Business, color: "#FF5733" }, // Red-Orange
+  { icon: Work, color: "#33FF57" }, // Green
+  { icon: Apartment, color: "#3380FF" }, // Blue
+  { icon: Description, color: "#FF33D4" }, // Pink
+  { icon: TrendingUp, color: "#FFD700" }, // Gold
+];
+
+const Registercmp = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
-  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [activeIcon, setActiveIcon] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIcon((prev) => (prev + 1) % companyIcons.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post("/register", formData); // Send data to backend
-      console.log("Registration Success:", response.data);
-      setSuccess("User registered successfully!");
-      setError("");
+      console.log("\ud83d\udce4 Sending registration request:", formData);
+      const response = await api.post("/register", formData);
+      console.log("\u2705 Registration Successful:", response.data);
+      alert("Registration successful! Please log in.");
+      navigate("/login");
     } catch (err) {
-      console.error("Registration Error:", err.response?.data?.message || err.message);
+      console.error("\u274c Registration Error:", err.response?.data?.message || err.message);
       setError(err.response?.data?.message || "Registration failed");
-      setSuccess("");
     }
   };
 
-  const styles = {
-    container: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100vh",
-      backgroundColor: "#f9fafb",
-      padding: "20px",
-    },
-    card: {
-      width: "100%",
-      maxWidth: "400px",
-      backgroundColor: "#ffffff",
-      borderRadius: "10px",
-      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-      padding: "30px",
-      textAlign: "center",
-    },
-    heading: {
-      fontSize: "26px",
-      fontWeight: "bold",
-      marginBottom: "20px",
-      color: "#2d3748",
-    },
-    input: {
-      width: "100%",
-      padding: "12px",
-      marginBottom: "15px",
-      borderRadius: "5px",
-      border: "1px solid #ccc",
-      fontSize: "16px",
-    },
-    button: {
-      width: "100%",
-      padding: "12px",
-      backgroundColor: "#48bb78",
-      color: "#ffffff",
-      fontSize: "16px",
-      fontWeight: "bold",
-      border: "none",
-      borderRadius: "5px",
-      cursor: "pointer",
-      transition: "background-color 0.3s ease",
-    },
-    buttonHover: {
-      backgroundColor: "#38a169",
-    },
-    success: {
-      color: "#38a169",
-      fontSize: "14px",
-      marginBottom: "10px",
-    },
-    error: {
-      color: "#e53e3e",
-      fontSize: "14px",
-      marginBottom: "10px",
-    },
-  };
+  const AnimatedIcon = companyIcons[activeIcon].icon;
+  const activeIconColor = companyIcons[activeIcon].color;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.heading}>Register</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={formData.name}
-            onChange={handleChange}
-            style={styles.input}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            style={styles.input}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            style={styles.input}
-            required
-          />
-          {success && <p style={styles.success}>{success}</p>}
-          {error && <p style={styles.error}>{error}</p>}
-          <button
-            type="submit"
-            style={styles.button}
-            onMouseEnter={(e) =>
-              (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)
-            }
-            onMouseLeave={(e) =>
-              (e.target.style.backgroundColor = styles.button.backgroundColor)
-            }
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        p: 2,
+        position: "relative",
+        backgroundColor: "#143645",
+        overflow: "hidden",
+      }}
+    >
+      {[...Array(25)].map((_, i) => {
+        const { icon: Icon, color } = companyIcons[i % companyIcons.length];
+        return (
+          <motion.div
+            key={i}
+            animate={{ y: [0, -30, 30, 0], opacity: [0.8, 1, 0.8] }}
+            transition={{ duration: 5, repeat: Infinity, delay: i * 0.2 }}
+            style={{
+              position: "absolute",
+              top:` ${Math.random() * 100}%`,
+              left:` ${Math.random() * 100}%`,
+              color,
+            }}
           >
-            Register
-          </button>
-        </form>
-      </div>
-    </div>
+            <Icon style={{ fontSize: 40 }} />
+          </motion.div>
+        );
+      })}
+
+      <Container maxWidth="md">
+        <Paper
+          elevation={8}
+          sx={{
+            p: { xs: 3, md: 6 },
+            borderRadius: 3,
+            backdropFilter: "blur(8px)",
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+          }}
+        >
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6} sx={{ textAlign: "center", pr: { md: 3 } }}>
+              <motion.div animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity }}>
+                <AnimatedIcon sx={{ fontSize: 100, color: activeIconColor }} />
+              </motion.div>
+              <Typography variant="h5" sx={{ fontWeight: "bold", mt: 2, color: "#FFF" }}>
+                Join Our Platform
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2, color: "#DDD" }}>
+                Create an account to access exclusive company insights and manage your profile.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold", color: "#FFF" }}>
+                Register
+              </Typography>
+              <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+                <TextField label="Name" name="name" fullWidth required value={formData.name} onChange={handleChange} sx={{ mb: 3, backgroundColor: "#FFF", borderRadius: 1 }} />
+                <TextField label="Email" name="email" type="email" fullWidth required value={formData.email} onChange={handleChange} sx={{ mb: 3, backgroundColor: "#FFF", borderRadius: 1 }} />
+                <TextField label="Password" name="password" type="password" fullWidth required value={formData.password} onChange={handleChange} sx={{ mb: 3, backgroundColor: "#FFF", borderRadius: 1 }} />
+                {error && (
+                  <Typography variant="body2" color="error" sx={{ mb: 2, textAlign: "center" }}>
+                    {error}
+                  </Typography>
+                )}
+                <Button
+                  variant="contained"
+                  type="submit"
+                  fullWidth
+                  sx={{
+                    py: 1.5,
+                    backgroundColor: "#00A8E8",
+                    fontWeight: "bold",
+                    color: "#FFF",
+                    "&:hover": { backgroundColor: "#0D47A1" },
+                  }}
+                >
+                  Register
+                </Button>
+              </Box>
+              <Box sx={{ mt: 2, textAlign: "center" }}>
+                <Typography variant="body2" sx={{ color: "#FFF" }}>
+                  Already have an account? {" "}
+                  <Link to="/login" style={{ textDecoration: "none", color: "#FFF", fontWeight: "bold" }}>
+                    Login here
+                  </Link>
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 
-export default SignUp;
+export default Registercmp;

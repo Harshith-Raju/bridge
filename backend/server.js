@@ -7,12 +7,15 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
+const http = require("http");
+const socketIo = require("socket.io");
 
 const authRoutes = require("./routes/auth");
 const companyRoutes = require("./routes/company");
 
-const uploads = multer({ dest: "uploads/" });
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, { cors: { origin: "*" } });
 const PORT = process.env.PORT || 5000;
 
 // Middleware
@@ -51,6 +54,7 @@ const storage = multer.diskStorage({
   },
 });
 
+// Create the upload instance
 const upload = multer({ storage: storage });
 
 // Email Transporter
@@ -62,8 +66,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Investor Schema
-const investorSchema = new mongoose.Schema({
+// Define Mongoose Models Safely
+const Investor = mongoose.models.Investor || mongoose.model("Investor", new mongoose.Schema({
   fullName: String,
   dob: Date,
   gender: String,
@@ -80,12 +84,9 @@ const investorSchema = new mongoose.Schema({
   educationalQualification: String,
   professionalExperience: String,
   previousFranchiseExperience: String,
-});
+}));
 
-const Investor = mongoose.model("Investor", investorSchema);
-
-// Business Schema (Updated to match frontend form)
-const businessSchema = new mongoose.Schema({
+const Business = mongoose.models.Business || mongoose.model("Business", new mongoose.Schema({
   companyName: String,
   industry: String,
   yearEstablished: String,
@@ -100,18 +101,70 @@ const businessSchema = new mongoose.Schema({
   financialDocuments: String,
   isAgreed: Boolean,
   status: { type: String, default: "pending" },
-});
+}));
 
-const Business = mongoose.model("Business", businessSchema);
-
-// Notification Schema
-const notificationSchema = new mongoose.Schema({
+const Notification = mongoose.models.Notification || mongoose.model("Notification", new mongoose.Schema({
   businessId: { type: mongoose.Schema.Types.ObjectId, ref: "Business" },
   status: { type: String, default: "pending" },
   createdAt: { type: Date, default: Date.now },
-});
+}));
 
-const Notification = mongoose.model("Notification", notificationSchema);
+const Company = mongoose.models.Company || mongoose.model("Company", new mongoose.Schema({
+  name: String,
+  category: String, // e.g., "Food", "Health & Fitness", "Hotels & Drinks"
+}));
+
+const CompanyCategory = mongoose.models.CompanyCategory || mongoose.model("CompanyCategory", new mongoose.Schema({
+  name: String,
+}));
+
+const InvestorStatus = mongoose.models.InvestorStatus || mongoose.model("InvestorStatus", new mongoose.Schema({
+  status: String, // e.g., "Approved", "Rejected", "Pending"
+}));
+
+const PendingBusiness = mongoose.models.PendingBusiness || mongoose.model("PendingBusiness", new mongoose.Schema({
+  businessId: { type: mongoose.Schema.Types.ObjectId, ref: "Business" },
+  status: { type: String, default: "pending" },
+}));
+
+const User = mongoose.models.User || mongoose.model("User ", new mongoose.Schema({
+  username: String,
+  email: String,
+  password: String,
+  role: String, // e.g., "admin", "investor", "company"
+}));
+
+const Announcement = mongoose.models.Announcement || mongoose.model("Announcement", new mongoose.Schema({
+  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Business" },
+  message: String,
+  isApproved: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+}));
+
+// Socket.IO for real-time updates
+io.on("connection", (socket) => {
+  console.log("A user connected");
+
+  socket.on("sendAnnouncement", async (data) => {
+    const { companyId, message } = data;
+    const newAnnouncement = new Announcement({ companyId, message });
+    await newAnnouncement.save();
+    io.emit("newAnnouncement", newAnnouncement);
+  });
+
+  socket.on("approveAnnouncement", async (announcementId) => {
+    const announcement = await Announcement.findByIdAndUpdate(
+      announcementId,
+      { isApproved: true },
+      { new: true }
+    );
+    io.emit("announcementApproved", announcement);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
+  });
+});
 
 // Routes
 app.use("/api", authRoutes);
@@ -169,13 +222,7 @@ app.post("/api/investors", upload.single("profilePicture"), async (req, res) => 
       text: `Dear ${fullName},\n\nThank you for registering as an investor. Your registration has been successfully received.\n\nBest regards,\nThe Investor Team`,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Error sending email:", error);
-      } else {
-        console.log("Email sent:", info.response);
-      }
-    });
+    await transporter.sendMail(mailOptions);
 
     res.status(201).json({
       message: "Investor registered successfully!",
@@ -183,18 +230,70 @@ app.post("/api/investors", upload.single("profilePicture"), async (req, res) => 
     });
   } catch (err) {
     console.error("Error:", err);
-    res.status(500).json({ message: "Error registering investor", error: err });
+    res.status(500).json({ message: "Error registering investor", error: err.message });
   }
 });
 
+// Fetch all investors
 app.get("/api/investors", async (req, res) => {
   try {
     const investors = await Investor.find();
     res.json(investors);
   } catch (err) {
-    res.status(400).json("Error: " + err);
+    res.status(500).json({ message: "Error fetching investors", error: err.message });
   }
 });
+
+// Fetch all companies
+app.get("/api/companies", async (req, res) => {
+  try {
+    const companies = await Company.find();
+    res.json(companies);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching companies", error: err.message });
+  }
+});
+
+// Fetch all company categories
+app.get("/api/companycategories", async (req, res) => {
+  try {
+    const categories = await CompanyCategory.find();
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching company categories", error: err.message });
+  }
+});
+
+// Fetch all investor statuses
+app.get("/api/investorstatuses", async (req, res) => {
+  try {
+    const statuses = await InvestorStatus.find();
+    res.json(statuses);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching investor statuses", error: err.message });
+  }
+});
+
+// Fetch all pending businesses
+app.get("/api/pendingbusinesses", async (req, res) => {
+  try {
+    const pendingBusinesses = await PendingBusiness.find().populate("businessId");
+    res.json(pendingBusinesses);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching pending businesses", error: err.message });
+  }
+});
+
+// Fetch all users
+app.get("/api/users", async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching users", error: err.message });
+  }
+});
+
 // Business Registration Route (with File Upload)
 app.post("/api/businesses", upload.single("financialDocuments"), async (req, res) => {
   const {
@@ -254,15 +353,18 @@ app.post("/api/businesses", upload.single("financialDocuments"), async (req, res
 
     res.json({ message: "Business registered!", data: savedBusiness });
   } catch (err) {
-    res.status(400).json("Error: " + err);
+    res.status(400).json({ message: "Error registering business", error: err.message });
   }
 });
 
 // Fetch all businesses
-app.get("/api/businesses", (req, res) => {
-  Business.find()
-    .then((businesses) => res.json(businesses))
-    .catch((err) => res.status(400).json("Error: " + err));
+app.get("/api/businesses", async (req, res) => {
+  try {
+    const businesses = await Business.find();
+    res.json(businesses);
+  } catch (err) {
+    res.status(400).json({ message: "Error fetching businesses", error: err.message });
+  }
 });
 
 // Fetch all notifications with business data
@@ -271,7 +373,7 @@ app.get("/api/notifications", async (req, res) => {
     const notifications = await Notification.find({ status: "pending" }).populate("businessId");
     res.json(notifications);
   } catch (err) {
-    res.status(400).json("Error: " + err);
+    res.status(400).json({ message: "Error fetching notifications", error: err.message });
   }
 });
 
@@ -299,7 +401,7 @@ app.post("/api/notifications/:id/approve", async (req, res) => {
 
     res.json({ message: "Business approved" });
   } catch (err) {
-    res.status(400).json("Error: " + err);
+    res.status(400).json({ message: "Error approving business", error: err.message });
   }
 });
 
@@ -327,24 +429,47 @@ app.post("/api/notifications/:id/reject", async (req, res) => {
 
     res.json({ message: "Business rejected" });
   } catch (err) {
-    res.status(400).json("Error: " + err);
+    res.status(400).json({ message: "Error rejecting business", error: err.message });
   }
 });
-app.post("/api/businesses/:id/reviews", async (req, res) => {
-  const { text, rating } = req.body;
-  try {
-    const business = await Business.findById(req.params.id);
-    if (!business) return res.status(404).json({ message: "Business not found" });
 
-    business.reviews.push({ text, rating });
-    await business.save();
-    res.json(business.reviews[business.reviews.length - 1]);
+// Announcement Routes
+app.post("/api/announcements", async (req, res) => {
+  const { companyId, message } = req.body;
+  try {
+    const newAnnouncement = new Announcement({ companyId, message });
+    await newAnnouncement.save();
+    io.emit("newAnnouncement", newAnnouncement);
+    res.status(201).json(newAnnouncement);
   } catch (err) {
-    res.status(400).json("Error: " + err);
+    res.status(500).json({ message: "Error creating announcement", error: err.message });
+  }
+});
+
+app.get("/api/announcements", async (req, res) => {
+  try {
+    const announcements = await Announcement.find({ isApproved: true }).populate("companyId");
+    res.json(announcements);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching announcements", error: err.message });
+  }
+});
+
+app.post("/api/announcements/:id/approve", async (req, res) => {
+  try {
+    const announcement = await Announcement.findByIdAndUpdate(
+      req.params.id,
+      { isApproved: true },
+      { new: true }
+    );
+    io.emit("announcementApproved", announcement);
+    res.json(announcement);
+  } catch (err) {
+    res.status(500).json({ message: "Error approving announcement", error: err.message });
   }
 });
 
 // Start the server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
