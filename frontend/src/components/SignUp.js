@@ -46,7 +46,7 @@ const Registercmp = () => {
       const response = await api.post("/register", formData);
       console.log("\u2705 Registration Successful:", response.data);
       alert("Registration successful! Please log in.");
-      navigate("/login");
+      navigate("/logininv");
     } catch (err) {
       console.error("\u274c Registration Error:", err.response?.data?.message || err.message);
       setError(err.response?.data?.message || "Registration failed");
@@ -141,7 +141,7 @@ const Registercmp = () => {
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <Typography variant="body2" sx={{ color: "#FFF" }}>
                   Already have an account? {" "}
-                  <Link to="/login" style={{ textDecoration: "none", color: "#FFF", fontWeight: "bold" }}>
+                  <Link to="/logininv" style={{ textDecoration: "none", color: "#FFF", fontWeight: "bold" }}>
                     Login here
                   </Link>
                 </Typography>

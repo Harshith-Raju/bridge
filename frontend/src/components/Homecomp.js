@@ -58,7 +58,7 @@ const HomePageCom = () => {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <img src="https://via.placeholder.com/50" alt="Logo" style={{ width: "50px", marginRight: "15px" }} />
+            <img src="C:\Users\harsh\OneDrive\Desktop\again - Copy\bridge\frontend\public\profile.png" alt="Logo" style={{ width: "50px", marginRight: "15px" }} />
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#fff" }}>
               Franchise <span style={{ color: "#ff6600" }}>Bridge</span>
             </Typography>
@@ -74,10 +74,10 @@ const HomePageCom = () => {
             <IconButton onClick={() => navigate("/notification")} sx={{ color: "#fff" }}>
               <NotificationsIcon />
             </IconButton>
-            <IconButton onClick={() => navigate("/landingpage")} sx={{ color: "#fff" }}>
+            <IconButton onClick={() => navigate("/logincmp")} sx={{ color: "#fff" }}>
               <ExitToAppIcon />
             </IconButton>
-            <IconButton onClick={() => navigate("/registercom")} sx={{ color: "#fff" }}>
+            <IconButton onClick={() => navigate("/profile")} sx={{ color: "#fff" }}>
               <AccountCircleIcon />
             </IconButton>
             <IconButton onClick={() => setDarkMode(!darkMode)} sx={{ color: "#fff" }}>
@@ -188,8 +188,8 @@ const HomePageCom = () => {
         >
           {[
             { text: "Register", icon: <BusinessIcon fontSize="large" />, route: "/registercom" },
-            { text: "Investors List", icon: <GroupIcon fontSize="large" />, route: "/investors-list" },
-            { text: "Contact Us", icon: <CallIcon fontSize="large" />, route: "/comoffer" },
+            { text: "Investors List", icon: <GroupIcon fontSize="large" />, route: "/Investorlist" },
+            { text: "Shedule video Conference", icon: <CallIcon fontSize="large" />, route: "/schedulecall" },
           ].map((item, index) => (
             <Grow key={index} in={true} style={{ transformOrigin: "0 0 0" }} timeout={(index + 1) * 1000}>
               <Box
@@ -315,6 +315,7 @@ const HomePageCom = () => {
         </Box>
       </Fade>
     </Box>
+    
   )
 }
 

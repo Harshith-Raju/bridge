@@ -122,7 +122,7 @@ const LoginPage = () => {
               '&:hover': { backgroundColor: '#e0e0e0' },
             }}
           >
-            Company Login
+            Company signin
           </Button>
         </Box>
       </Box>
@@ -178,7 +178,7 @@ const LoginPage = () => {
               '&:hover': { backgroundColor: '#e0e0e0' },
             }}
           >
-            Investor Login
+            Investor signin
           </Button>
         </Box>
       </Box>

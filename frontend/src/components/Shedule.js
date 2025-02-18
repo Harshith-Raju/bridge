@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import { motion } from "framer-motion";
 
-const Shedule = () => {
+const ScheduleCall = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,40 +14,59 @@ const Shedule = () => {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [notification, setNotification] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    try {
+      const response = await fetch("http://localhost:5000/api/schedule", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        setSubmitted(true);
+        setNotification("Call is scheduled and a confirmation email has been sent.");
+      } else {
+        console.error("Failed to submit form");
+        setNotification("Failed to schedule the call. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setNotification("An error occurred. Please try again.");
+    }
   };
 
   // Page background style
   const pageStyle = {
-    backgroundColor: "#143645", // Dark blue background color
-    minHeight: "100vh", // Ensure the background covers the full page
+    backgroundColor: "#143645",
+    minHeight: "100vh",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    position: "relative", // Needed for absolute positioning of the floating icons
-    overflow: "hidden", // Prevent scrolling caused by the floating icons
+    position: "relative",
+    overflow: "hidden",
   };
 
   // Transparent form container style
   const containerStyle = {
-    maxWidth: "800px", // Increased width to 800px
-    padding: "30px", // Increased padding
-    border: "1px solid rgba(255, 255, 255, 0.3)", // Semi-transparent border
+    maxWidth: "800px",
+    padding: "30px",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
     borderRadius: "10px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     fontFamily: "Arial, sans-serif",
-    backgroundColor: "rgba(255, 255, 255, 0.1)", // Transparent background
-    backdropFilter: "blur(10px)", // Adds a blur effect for better visibility
-    color: "white", // Text color for better contrast
-    position: "relative", // Ensure the form is above the floating icons
-    zIndex: 1, // Ensure the form is above the floating icons
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    backdropFilter: "blur(10px)",
+    color: "white",
+    position: "relative",
+    zIndex: 1,
   };
 
   const labelStyle = {
@@ -55,7 +74,7 @@ const Shedule = () => {
     fontWeight: "bold",
     display: "block",
     marginBottom: "5px",
-    color: "white", // Label text color
+    color: "white",
   };
 
   const inputStyle = {
@@ -63,25 +82,25 @@ const Shedule = () => {
     padding: "10px",
     marginBottom: "15px",
     borderRadius: "5px",
-    border: "1px solid rgba(255, 255, 255, 0.3)", // Semi-transparent border
-    backgroundColor: "transparent", // Transparent input background
-    color: "white", // Input text color
+    border: "1px solid rgba(255, 255, 255, 0.3)",
+    backgroundColor: "transparent",
+    color: "white",
   };
 
   const buttonStyle = {
     width: "100%",
     padding: "10px",
-    backgroundColor: "#007BFF", // Blue background color
-    color: "white", // Button text color
-    border: "1px solid #007BFF", // Blue border
+    backgroundColor: "#007BFF",
+    color: "white",
+    border: "1px solid #007BFF",
     borderRadius: "5px",
     cursor: "pointer",
-    transition: "background-color 0.3s, color 0.3s", // Smooth transition for hover effect
+    transition: "background-color 0.3s, color 0.3s",
   };
 
   const buttonHoverStyle = {
-    backgroundColor: "#0056b3", // Darker blue on hover
-    color: "white", // Text color on hover
+    backgroundColor: "#0056b3",
+    color: "white",
   };
 
   // Floating phone icons component
@@ -95,10 +114,10 @@ const Shedule = () => {
             transition={{ duration: 5, repeat: Infinity, delay: i * 0.2 }}
             style={{
               position: "absolute",
-              top:`${Math.random() * 100}%`,
-              left:`${Math.random() * 100}%`,
-              fontSize: "1.5rem", // Smaller size for the phone icons
-              color: "rgba(255, 255, 255, 0.7)", // Semi-transparent white color
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              fontSize: "1.5rem",
+              color: "rgba(255, 255, 255, 0.7)",
             }}
           >
             ☎
@@ -120,6 +139,7 @@ const Shedule = () => {
           <div style={{ textAlign: "center", padding: "20px", color: "green" }}>
             <h3>Call Scheduled Successfully!</h3>
             <p>We will contact you on {formData.date} at {formData.time} {formData.ampm}.</p>
+            <p>{notification}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -167,4 +187,4 @@ const Shedule = () => {
   );
 };
 
-export default Shedule;
+export default ScheduleCall;

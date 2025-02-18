@@ -124,7 +124,7 @@ const Logincmp = () => {
             {/* Login Form */}
             <Grid item xs={12} md={6}>
               <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold", color: "#FFF" }}>
-                Login
+                signin
               </Typography>
               <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
                 <TextField
@@ -188,7 +188,7 @@ const Logincmp = () => {
                 <Typography variant="body2" sx={{ mt: 1, color: "#FFF" }}>
                   Don't have an account?{" "}
                   <Link to="/signup" style={{ textDecoration: "none", color: "#f5fafc", fontWeight: "bold" }}>
-                    Register here
+                    signup here
                   </Link>
                 </Typography>
               </Box>

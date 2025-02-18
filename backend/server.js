@@ -294,6 +294,20 @@ app.get("/api/users", async (req, res) => {
   }
 });
 
+// Call Scheduling Schema
+const callSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  phone: String,
+  date: String,
+  time: String,
+  ampm: String,
+  timeZone: String,
+});
+
+const Call = mongoose.model("Call", callSchema);
+
+
 // Business Registration Route (with File Upload)
 app.post("/api/businesses", upload.single("financialDocuments"), async (req, res) => {
   const {
@@ -356,6 +370,7 @@ app.post("/api/businesses", upload.single("financialDocuments"), async (req, res
     res.status(400).json({ message: "Error registering business", error: err.message });
   }
 });
+
 
 // Fetch all businesses
 app.get("/api/businesses", async (req, res) => {
@@ -468,6 +483,25 @@ app.post("/api/announcements/:id/approve", async (req, res) => {
     res.status(500).json({ message: "Error approving announcement", error: err.message });
   }
 });
+app.post('/api/schedule', async (req, res) => {
+  const { name, email, date, time, ampm, timeZone } = req.body;
+
+  const mailOptions = {
+    from: 'your-email@gmail.com',
+    to: email,
+    subject: 'Call Scheduled Successfully',
+    text: `Hello ${name},\n\nYour call has been scheduled on ${date} at ${time} ${ampm} (${timeZone}).\n\nBest regards,\nYour Company`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: 'Call scheduled and email sent successfully' });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ message: 'Failed to send email' });
+  }
+});
+
 
 // Start the server
 server.listen(PORT, () => {

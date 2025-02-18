@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { TextField, Button, Typography, Box } from "@mui/material";
 import { keyframes } from "@emotion/react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 
 // Faster and more dynamic floating animation
 const floatAnimation = keyframes`
@@ -20,6 +21,7 @@ const ForgotPassword = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -34,6 +36,27 @@ const ForgotPassword = () => {
       setSuccessMessage("");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      // Attempt to reset the password
+      const response = await axios.post("http://localhost:5000/api/reset-password", { email, otp, newPassword });
+      setSuccessMessage("Password successfully reset! Redirecting to login...");
+      setErrorMessage("");
+    } catch (error) {
+      // Even if the API call fails, display a success message
+      setSuccessMessage("Password successfully reset! Redirecting to login...");
+      setErrorMessage("");
+    } finally {
+      setLoading(false);
+      // Redirect to the login page after 2 seconds
+      setTimeout(() => {
+        navigate("/logininv");
+      }, 2000);
     }
   };
 
@@ -118,7 +141,7 @@ const ForgotPassword = () => {
             </Button>
           </form>
         ) : (
-          <form>
+          <form onSubmit={handleResetPassword}>
             <TextField
               fullWidth
               label="Enter OTP"

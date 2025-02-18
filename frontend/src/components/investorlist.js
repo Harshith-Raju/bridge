@@ -212,106 +212,147 @@ const InvestorList = () => {
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
-      <AppBar position="static" color="default" elevation={1}>
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Investor List
-          </Typography>
-          <TextField
-            label="Search Investors"
-            variant="outlined"
-            size="small"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{ mr: 2, width: 300 }}
-          />
-          <Tooltip title="Export to Excel">
-            <IconButton onClick={exportToExcel} color="inherit">
-              <FileDownload />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Toggle Dark Mode">
-            <IconButton onClick={toggleDarkMode} color="inherit">
-              {darkMode ? <Brightness7 /> : <Brightness4 />}
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Column Visibility">
-            <IconButton onClick={handleColumnMenuClick} color="inherit">
-              <Visibility />
-            </IconButton>
-          </Tooltip>
-          <Menu
-            anchorEl={anchorEl}
-            open={openColumnMenu}
-            onClose={handleColumnMenuClose}
+      <Box
+        sx={{
+          backgroundColor: '#143645',
+          minHeight: '100vh',
+          padding: 3,
+        }}
+      >
+        <AppBar position="static" color="default" elevation={1} sx={{ backgroundColor: '#143645' }}>
+          <Toolbar>
+            {/* Increased size of "Investor List" heading */}
+            <Typography variant="h4" sx={{ flexGrow: 1, color: '#ffffff', fontWeight: 'bold' }}>
+              Investor List
+            </Typography>
+            <TextField
+              label="Search Investors"
+              variant="outlined"
+              size="small"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              sx={{
+                mr: 2,
+                width: 300,
+                '& .MuiInputBase-input': {
+                  color: '#ffffff', // White text color for input
+                },
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: '#ffffff', // White border color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#ffffff', // White border color on hover
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: '#ffffff', // White label color
+                },
+              }}
+            />
+            <Tooltip title="Export to Excel">
+              <IconButton onClick={exportToExcel} sx={{ color: '#ffffff' }}>
+                <FileDownload />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Toggle Dark Mode">
+              <IconButton onClick={toggleDarkMode} sx={{ color: '#ffffff' }}>
+                {darkMode ? <Brightness7 /> : <Brightness4 />}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Column Visibility">
+              <IconButton onClick={handleColumnMenuClick} sx={{ color: '#ffffff' }}>
+                <Visibility />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              anchorEl={anchorEl}
+              open={openColumnMenu}
+              onClose={handleColumnMenuClose}
+            >
+              {Object.keys(columnVisibility).map((column) => (
+                <MenuItem key={column}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={columnVisibility[column]}
+                        onChange={() => toggleColumnVisibility(column)}
+                      />
+                    }
+                    label={column.replace(/([A-Z])/g, ' $1').toUpperCase()}
+                  />
+                </MenuItem>
+              ))}
+            </Menu>
+          </Toolbar>
+        </AppBar>
+        <Container sx={{ paddingY: 4 }}>
+          <TableContainer
+            component={Paper}
+            sx={{
+              backgroundColor: 'rgba(255, 255, 255, 0.1)', // Transparent white background
+              boxShadow: 3,
+              borderRadius: 2,
+              backdropFilter: 'blur(10px)', // Glass-morphism effect
+              border: '1px solid rgba(255, 255, 255, 0.2)', // Subtle border
+            }}
           >
-            {Object.keys(columnVisibility).map((column) => (
-              <MenuItem key={column}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={columnVisibility[column]}
-                      onChange={() => toggleColumnVisibility(column)}
-                    />
-                  }
-                  label={column.replace(/([A-Z])/g, ' $1').toUpperCase()}
-                />
-              </MenuItem>
-            ))}
-          </Menu>
-        </Toolbar>
-      </AppBar>
-      <Container sx={{ paddingY: 4 }}>
-        <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ backgroundColor: darkMode ? '#1e1e1e' : '#f5f5f5' }}>
-                {Object.keys(columnVisibility).map((column) =>
-                  columnVisibility[column] && (
-                    <TableCell
-                      key={column}
-                      sx={{ fontWeight: 'bold' }}
-                      onClick={() => handleSort(column)}
-                    >
-                      {column.replace(/([A-Z])/g, ' $1').toUpperCase()}
-                      {sortConfig.key === column && (sortConfig.direction === 'asc' ? ' ↑' : ' ↓')}
-                    </TableCell>
-                  )
-                )}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {paginatedInvestors.map((investor, index) => (
-                <TableRow
-                  key={index}
-                  onClick={() => setSelectedInvestor(investor)}
-                  sx={{
-                    '&:nth-of-type(odd)': { backgroundColor: darkMode ? '#2a2a2a' : '#fafafa' },
-                    '&:hover': { backgroundColor: darkMode ? '#333333' : '#eeeeee' },
-                    cursor: 'pointer',
-                  }}
-                >
+            <Table>
+              <TableHead>
+                <TableRow sx={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
                   {Object.keys(columnVisibility).map((column) =>
                     columnVisibility[column] && (
-                      <TableCell key={column}>
-                        {investor[column] || 'N/A'}
+                      <TableCell
+                        key={column}
+                        sx={{
+                          fontWeight: 'bold',
+                          color: '#ffffff', // White text color for header
+                        }}
+                        onClick={() => handleSort(column)}
+                      >
+                        {column.replace(/([A-Z])/g, ' $1').toUpperCase()}
+                        {sortConfig.key === column && (sortConfig.direction === 'asc' ? ' ↑' : ' ↓')}
                       </TableCell>
                     )
                   )}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Box display="flex" justifyContent="center" mt={3}>
-          <Pagination
-            count={Math.ceil(filteredAndSearchedInvestors.length / rowsPerPage)}
-            page={page}
-            onChange={(_, value) => setPage(value)}
-            color="primary"
-          />
-        </Box>
-      </Container>
+              </TableHead>
+              <TableBody>
+                {paginatedInvestors.map((investor, index) => (
+                  <TableRow
+                    key={index}
+                    onClick={() => setSelectedInvestor(investor)}
+                    sx={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)', // Transparent white background
+                      '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.2)' }, // Slightly darker on hover
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {Object.keys(columnVisibility).map((column) =>
+                      columnVisibility[column] && (
+                        <TableCell
+                          key={column}
+                          sx={{ color: '#ffffff' }} // White text color for cells
+                        >
+                          {investor[column] || 'N/A'}
+                        </TableCell>
+                      )
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Box display="flex" justifyContent="center" mt={3}>
+            <Pagination
+              count={Math.ceil(filteredAndSearchedInvestors.length / rowsPerPage)}
+              page={page}
+              onChange={(_, value) => setPage(value)}
+              color="primary"
+            />
+          </Box>
+        </Container>
+      </Box>
       <Modal open={Boolean(selectedInvestor)} onClose={() => setSelectedInvestor(null)}>
         <Box sx={{ p: 4, bgcolor: 'background.paper', borderRadius: 2 }}>
           <Typography variant="h6">Investor Details</Typography>

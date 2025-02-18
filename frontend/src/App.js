@@ -20,6 +20,8 @@ import Investorlist from "./components/investorlist.js";
 import Notification from "./components/Notifyadmin.js";
 import Dashboard from "./components/Dashboard.js";
 import ScheduleCall from "./components/Shedule.js";  
+import ProfileForm from "./components/Profile.js";
+import FAQPage from "./components/Faq.js";
 const App = () => {
   return (
     <Router>
@@ -43,8 +45,9 @@ const App = () => {
         <Route path="/invoffer" element={<Invoffer />} />
         <Route path="/admoffer" element={<Admoffer />} /> */}
         <Route path="/NotifyAdmmin" element={<Notification />} />
-        
+        <Route path="/profile" element={<ProfileForm />} />
         <Route path="/schedulecall" element={<ScheduleCall />} />
+        <Route path="/faq" element={<FAQPage />} />
       </Routes>
     </Router>
   );
