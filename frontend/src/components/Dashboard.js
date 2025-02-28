@@ -148,7 +148,7 @@ const Dashboard = () => {
         </PieChart>
       </Paper>
 
-      {/* Company Categories Pie Chart */}
+      {/* Company Categories Pie Chart
       <Paper
         sx={{
           padding: "20px",
@@ -179,7 +179,7 @@ const Dashboard = () => {
           <Tooltip />
           <Legend />
         </PieChart>
-      </Paper>
+      </Paper> */}
 
       {/* Pending Businesses Pie Chart */}
       <Paper

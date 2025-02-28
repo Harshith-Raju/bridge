@@ -112,7 +112,7 @@ const Registercmp = () => {
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold", color: "#FFF" }}>
-                Register
+                Signup
               </Typography>
               <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
                 <TextField label="Name" name="name" fullWidth required value={formData.name} onChange={handleChange} sx={{ mb: 3, backgroundColor: "#FFF", borderRadius: 1 }} />
@@ -135,14 +135,14 @@ const Registercmp = () => {
                     "&:hover": { backgroundColor: "#0D47A1" },
                   }}
                 >
-                  Register
+                  Signup
                 </Button>
               </Box>
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <Typography variant="body2" sx={{ color: "#FFF" }}>
                   Already have an account? {" "}
                   <Link to="/logininv" style={{ textDecoration: "none", color: "#FFF", fontWeight: "bold" }}>
-                    Login here
+                    Signin here
                   </Link>
                 </Typography>
               </Box>

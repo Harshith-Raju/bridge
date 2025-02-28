@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import { motion } from "framer-motion";
 
-const ScheduleCall = () => {
+const Shedule = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,59 +14,40 @@ const ScheduleCall = () => {
   });
 
   const [submitted, setSubmitted] = useState(false);
-  const [notification, setNotification] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:5000/api/schedule", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      if (response.ok) {
-        setSubmitted(true);
-        setNotification("Call is scheduled and a confirmation email has been sent.");
-      } else {
-        console.error("Failed to submit form");
-        setNotification("Failed to schedule the call. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setNotification("An error occurred. Please try again.");
-    }
+    setSubmitted(true);
   };
 
   // Page background style
   const pageStyle = {
-    backgroundColor: "#143645",
-    minHeight: "100vh",
+    backgroundColor: "#143645", // Dark blue background color
+    minHeight: "100vh", // Ensure the background covers the full page
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    position: "relative",
-    overflow: "hidden",
+    position: "relative", // Needed for absolute positioning of the floating icons
+    overflow: "hidden", // Prevent scrolling caused by the floating icons
   };
 
   // Transparent form container style
   const containerStyle = {
-    maxWidth: "800px",
-    padding: "30px",
-    border: "1px solid rgba(255, 255, 255, 0.3)",
+    maxWidth: "800px", // Increased width to 800px
+    padding: "30px", // Increased padding
+    border: "1px solid rgba(255, 255, 255, 0.3)", // Semi-transparent border
     borderRadius: "10px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     fontFamily: "Arial, sans-serif",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    backdropFilter: "blur(10px)",
-    color: "white",
-    position: "relative",
-    zIndex: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.1)", // Transparent background
+    backdropFilter: "blur(10px)", // Adds a blur effect for better visibility
+    color: "white", // Text color for better contrast
+    position: "relative", // Ensure the form is above the floating icons
+    zIndex: 1, // Ensure the form is above the floating icons
   };
 
   const labelStyle = {
@@ -74,7 +55,7 @@ const ScheduleCall = () => {
     fontWeight: "bold",
     display: "block",
     marginBottom: "5px",
-    color: "white",
+    color: "white", // Label text color
   };
 
   const inputStyle = {
@@ -82,25 +63,30 @@ const ScheduleCall = () => {
     padding: "10px",
     marginBottom: "15px",
     borderRadius: "5px",
-    border: "1px solid rgba(255, 255, 255, 0.3)",
-    backgroundColor: "transparent",
-    color: "white",
+    border: "1px solid rgba(255, 255, 255, 0.3)", // Semi-transparent border
+    backgroundColor: "transparent", // Transparent input background
+    color: "white", // Input text color
+  };
+
+  const selectStyle = {
+    ...inputStyle,
+    color: "#143645", // Change the text color to #143645 for select elements
   };
 
   const buttonStyle = {
     width: "100%",
     padding: "10px",
-    backgroundColor: "#007BFF",
-    color: "white",
-    border: "1px solid #007BFF",
+    backgroundColor: "#007BFF", // Blue background color
+    color: "white", // Button text color
+    border: "1px solid #007BFF", // Blue border
     borderRadius: "5px",
     cursor: "pointer",
-    transition: "background-color 0.3s, color 0.3s",
+    transition: "background-color 0.3s, color 0.3s", // Smooth transition for hover effect
   };
 
   const buttonHoverStyle = {
-    backgroundColor: "#0056b3",
-    color: "white",
+    backgroundColor: "#0056b3", // Darker blue on hover
+    color: "white", // Text color on hover
   };
 
   // Floating phone icons component
@@ -114,10 +100,10 @@ const ScheduleCall = () => {
             transition={{ duration: 5, repeat: Infinity, delay: i * 0.2 }}
             style={{
               position: "absolute",
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              fontSize: "1.5rem",
-              color: "rgba(255, 255, 255, 0.7)",
+              top:`${Math.random() * 100}%`,
+              left:`${Math.random() * 100}%`,
+              fontSize: "1.5rem", // Smaller size for the phone icons
+              color: "rgba(255, 255, 255, 0.7)", // Semi-transparent white color
             }}
           >
             ☎
@@ -139,7 +125,6 @@ const ScheduleCall = () => {
           <div style={{ textAlign: "center", padding: "20px", color: "green" }}>
             <h3>Call Scheduled Successfully!</h3>
             <p>We will contact you on {formData.date} at {formData.time} {formData.ampm}.</p>
-            <p>{notification}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -158,14 +143,14 @@ const ScheduleCall = () => {
             <label style={labelStyle}>Select Time</label>
             <div style={{ display: "flex", gap: "10px" }}>
               <input type="number" name="time" min="1" max="12" style={{ ...inputStyle, flex: "1" }} value={formData.time} onChange={handleChange} required />
-              <select name="ampm" style={{ ...inputStyle, flex: "1" }} value={formData.ampm} onChange={handleChange}>
+              <select name="ampm" style={{ ...selectStyle, flex: "1" }} value={formData.ampm} onChange={handleChange}>
                 <option value="AM">AM</option>
                 <option value="PM">PM</option>
               </select>
             </div>
 
             <label style={labelStyle}>Time Zone</label>
-            <select name="timeZone" style={inputStyle} value={formData.timeZone} onChange={handleChange}>
+            <select name="timeZone" style={selectStyle} value={formData.timeZone} onChange={handleChange}>
               <option value="UTC">UTC</option>
               <option value="EST">EST (Eastern Standard Time)</option>
               <option value="PST">PST (Pacific Standard Time)</option>
@@ -187,4 +172,4 @@ const ScheduleCall = () => {
   );
 };
 
-export default ScheduleCall;
+export default Shedule;

@@ -140,7 +140,7 @@ const RegisterInvestor = () => {
     <div style={styles.background}>
       <div style={styles.container}>
         <div style={styles.headingContainer}>
-          <h1 style={styles.heading}>Investor Registration</h1>
+          <h1 style={styles.heading}>Franchise Investor Registration Form</h1>
         </div>
         {errorMessage && <p style={styles.error}>{errorMessage}</p>} {/* Show error message */}
 

@@ -34,7 +34,6 @@ const FloatingInvestors = () => {
     </Box>
   );
 };
-
 const Logininv = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -65,6 +64,14 @@ const Logininv = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Check for specific admin credentials
+      if (formData.email === "harshithraju2005@gmail.com" && formData.password === "1234") {
+        // Navigate to admin home page
+        navigate("/adminhome");
+        return;
+      }
+
+      // Proceed with normal login for other users
       const response = await api.post("/login", formData);
       localStorage.setItem("token", response.data.token);
       alert("Login successful!");

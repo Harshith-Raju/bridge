@@ -51,9 +51,9 @@ const Logincmp = () => {
     try {
       console.log("📤 Sending login request:", formData);
       const response = await api.post("/login", formData);
-      console.log("✅ Login Successful:", response.data);
+      console.log("✅ signin Successful:", response.data);
       localStorage.setItem("token", response.data.token);
-      alert("Login successful!");
+      alert("signin successful!");
       navigate("/homecom");
     } catch (err) {
       console.error("❌ Login Error:", err.response?.data?.message || err.message);
@@ -176,7 +176,7 @@ const Logincmp = () => {
                     "&:hover": { backgroundColor: "#0D47A1" }, // Slightly lighter blue on hover
                   }}
                 >
-                  Login
+                  Signin
                 </Button>
               </Box>
               <Box sx={{ mt: 2, textAlign: "center" }}>

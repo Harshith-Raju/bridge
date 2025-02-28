@@ -131,7 +131,7 @@ const RegisterCom = () => {
     <div style={styles.background}>
       <div style={styles.container}>
         <div style={styles.headingContainer}>
-          <h2 style={styles.heading}>Register Your Business</h2>
+          <h2 style={styles.heading}>Bussiness Registration Form</h2>
         </div>
         <div style={styles.progressBarContainer}>
           <div style={{ ...styles.progressBar, width: `${progress}%` }}></div>

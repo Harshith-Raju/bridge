@@ -259,7 +259,9 @@ const HomePage = () => {
       <div style={styles.header}>
         {/* Logo and Title */}
         <div style={styles.logoSection}>
-          <img src="/path/to/logo.png" alt="Logo" style={styles.logo} />
+          <img src="https://tse1.mm.bing.net/th?id=OIP.7DnAqNbKDP4O5vzVoKFMWAHaF6&pid=Api&P=0&h=180" 
+              alt="Logo" 
+              style={{ borderRadius: '50%',width: '50px' }}  />
           <span style={{ fontSize: "24px", fontWeight: "bold" }}>Franchise Bridge</span>
         </div>
 
@@ -430,3 +432,4 @@ const HomePage = () => {
 };
 
 export default HomePage;
+

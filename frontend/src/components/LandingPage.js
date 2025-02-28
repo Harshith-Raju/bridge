@@ -167,9 +167,9 @@ const LandingPage = () => {
         <Toolbar sx={{ justifyContent: 'space-between', px: 5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <img 
-              src="C:\Users\harsh\OneDrive\Desktop\fran logo.png"
+              src="https://tse1.mm.bing.net/th?id=OIP.7DnAqNbKDP4O5vzVoKFMWAHaF6&pid=Api&P=0&h=180" 
               alt="Logo" 
-              style={{ borderRadius: '50%' }} // Corrected syntax
+              style={{ borderRadius: '50%',width: '50px' }} // Corrected syntax
             />
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: darkMode ? 'white' : 'black' }}>
               Franchise Bridge
