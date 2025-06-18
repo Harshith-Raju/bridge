@@ -8,7 +8,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleCompanyLogin = () => {
-    navigate('/homecomp');
+    navigate('/homecom');
   };
 
   const handleInvestorLogin = () => {
