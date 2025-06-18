@@ -12,7 +12,7 @@ const LoginPage = () => {
   };
 
   const handleInvestorLogin = () => {
-    navigate('/homeinv');
+    navigate('/home');
   };
 
   // Icons and emojis for the floating background
