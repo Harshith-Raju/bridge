@@ -10,9 +10,9 @@ import HomePage from "./components/Homeinv.js";
 import HomePageCom from "./components/Homecomp.js";
 import AdminHome from "./components/HomeAdmin.js";
 import ComList from "./components/comlist.js";
-// import Invoffer from "./components/invoffer.js";
-// import Admoffer from "./components/admoffer.js";
-// import Comoffer from "./components/Comoffer.js";
+import Invoffer from "./components/invoffer.js";
+import Admoffer from "./components/admoffer.js";
+import Comoffer from "./components/Comoffer.js";
 import BusinessList from "./components/Bussinesslist.js";
 import RegisterBusiness from "./components/RegisterCom.js";
 import RegisterInvestor from "./components/RegisterInv.js";
@@ -41,9 +41,9 @@ const App = () => {
         <Route path="/businesslist" element={<BusinessList />} />
         <Route path="/comlist" element={<ComList />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* <Route path="/comoffer" element={<Comoffer />} />
+        <Route path="/comoffer" element={<Comoffer />} />
         <Route path="/invoffer" element={<Invoffer />} />
-        <Route path="/admoffer" element={<Admoffer />} /> */}
+        <Route path="/admoffer" element={<Admoffer />} />
         <Route path="/NotifyAdmmin" element={<Notification />} />
         <Route path="/profile" element={<ProfileForm />} />
         <Route path="/schedulecall" element={<ScheduleCall />} />

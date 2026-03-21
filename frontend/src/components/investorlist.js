@@ -30,7 +30,7 @@ import {
   Snackbar,
   Tooltip,
 } from '@mui/material';
-import { Brightness4, Brightness7, FileDownload, FilterList, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Brightness4, Brightness7, FileDownload, Visibility } from '@mui/icons-material';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 
@@ -68,7 +68,7 @@ const InvestorList = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [darkMode, setDarkMode] = useState(false);
   const [selectedInvestor, setSelectedInvestor] = useState(null);
@@ -89,7 +89,7 @@ const InvestorList = () => {
     professionalExperience: true,
     previousFranchiseExperience: true,
   });
-  const [filters, setFilters] = useState({
+  const [filters] = useState({
     industry: '',
     budgetMin: '',
     budgetMax: '',

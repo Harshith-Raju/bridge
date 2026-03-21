@@ -8,11 +8,11 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleCompanyLogin = () => {
-    navigate('/homecom');
+    navigate('/logincmp');
   };
 
   const handleInvestorLogin = () => {
-    navigate('/home');
+    navigate('/logininv');
   };
 
   // Icons and emojis for the floating background
