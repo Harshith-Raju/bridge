@@ -3,7 +3,7 @@ import { TextField, Button, Grid, Typography, Container, Box, Avatar } from '@mu
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import {
-    Person, Email, Phone, Work, Description, LinkedIn, GitHub, Twitter, Instagram
+    Person, Email, Phone, Work, Description
 } from '@mui/icons-material';
 
 const ProfileForm = () => {

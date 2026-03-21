@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { Box, Typography, IconButton, Button, Grow, Zoom, Fade, useTheme, useMediaQuery } from "@mui/material"
+import { Box, Typography, IconButton, Grow, Fade, useTheme, useMediaQuery } from "@mui/material"
 import AccountCircleIcon from "@mui/icons-material/AccountCircle"
-import NotificationsIcon from "@mui/icons-material/Notifications"
 import ExitToAppIcon from "@mui/icons-material/ExitToApp"
 import BusinessIcon from "@mui/icons-material/Business"
 import GroupIcon from "@mui/icons-material/Group"
 import CallIcon from "@mui/icons-material/Call"
-import SmartToyIcon from "@mui/icons-material/SmartToy"
 import DarkModeIcon from "@mui/icons-material/DarkMode"
 import LightModeIcon from "@mui/icons-material/LightMode"
 
@@ -30,7 +28,7 @@ const HomePageCom = () => {
       setCurrentImage((prev) => (prev + 1) % images.length)
     }, 5000)
     return () => clearInterval(interval)
-  }, [])
+  }, [images.length])
 
   return (
     <Box

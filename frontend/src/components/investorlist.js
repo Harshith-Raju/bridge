@@ -19,7 +19,6 @@ import {
   Pagination,
   Toolbar,
   AppBar,
-  useTheme,
   ThemeProvider,
   createTheme,
   CssBaseline,

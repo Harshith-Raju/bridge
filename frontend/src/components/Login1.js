@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import { AccountBalance, Business, TrendingUp, Work, Apartment, Description } from '@mui/icons-material';
+import { Business, TrendingUp, Work, Apartment, Description } from '@mui/icons-material';
 
 const LoginPage = () => {
   const navigate = useNavigate();

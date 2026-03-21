@@ -18,8 +18,6 @@ import {
 } from '@mui/material';
 import { Email, Phone, LinkedIn, Twitter, Instagram, Brightness4, Brightness7 } from '@mui/icons-material';
 import { keyframes } from '@mui/system';
-import useSound from 'use-sound';
-import soundEffect from './background-sound.mp3';
 import Chatbot from './chat'; // Import the Chatbot component
 
 // Sample images for the slideshow
@@ -110,7 +108,6 @@ const LandingPage = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [darkMode, setDarkMode] = useState(true);
-  const [playSound] = useSound(soundEffect);
 
   // Handle scroll for nav shadow and active section
   useEffect(() => {
