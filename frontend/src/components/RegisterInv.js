@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaBriefcase, FaGraduationCap, FaMoneyBillAlt } from "react-icons/fa";
+import { API_BASE_URL } from "../config";
 
 const RegisterInvestor = () => {
   const [step, setStep] = useState(1);
@@ -98,7 +99,7 @@ const RegisterInvestor = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/investors", {
+      const response = await fetch(`${API_BASE_URL}/investors`, {
         method: "POST",
         body: data, // Sending FormData
       });

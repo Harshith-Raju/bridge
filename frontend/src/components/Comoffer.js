@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import socket from "../socket";
+import { API_BASE_URL } from "../config";
 
 const Comoffer = ({ companyId }) => {
   const [message, setMessage] = useState("");
@@ -8,7 +8,7 @@ const Comoffer = ({ companyId }) => {
   const handleSendAnnouncement = async () => {
     if (!message) return alert("Message cannot be empty");
     try {
-      await axios.post("http://localhost:5000/api/announcements", {
+      await axios.post(`${API_BASE_URL}/announcements`, {
         companyId,
         message,
       });

@@ -1,7 +1,8 @@
 import { io } from "socket.io-client";
+import { SOCKET_URL } from "./config";
 
 // Create a Socket.IO connection to the backend
-const socket = io("http://localhost:5000", {
+const socket = io(SOCKET_URL, {
   withCredentials: true,
   autoConnect: true, // Automatically connect when the socket is created
 });

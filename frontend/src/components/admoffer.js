@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import socket from "../socket";
+import { API_BASE_URL } from "../config";
 
 const Admoffer = () => {
   const [announcements, setAnnouncements] = useState([]);
 
   useEffect(() => {
     // Fetch initial announcements
-    axios.get("http://localhost:5000/api/announcements")
+    axios.get(`${API_BASE_URL}/announcements`)
       .then((res) => setAnnouncements(res.data));
 
     // Listen for new announcements
@@ -28,7 +29,7 @@ const Admoffer = () => {
 
   const handleDeleteAnnouncement = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/announcements/${id}`);
+      await axios.delete(`${API_BASE_URL}/announcements/${id}`);
     } catch (err) {
       console.error("Error deleting announcement:", err);
     }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 import {
   Container,
   Typography,
@@ -106,7 +107,7 @@ const InvestorList = () => {
   useEffect(() => {
     const fetchInvestors = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/investors');
+        const response = await axios.get(`${API_BASE_URL}/investors`);
         setInvestors(response.data);
       } catch (error) {
         setError('Failed to fetch investors. Please try again.');

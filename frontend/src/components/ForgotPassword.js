@@ -3,6 +3,7 @@ import axios from "axios";
 import { TextField, Button, Typography, Box } from "@mui/material";
 import { keyframes } from "@emotion/react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import { API_BASE_URL } from "../config";
 
 // Faster and more dynamic floating animation
 const floatAnimation = keyframes`
@@ -27,7 +28,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5000/api/forgot-password", { email });
+      const response = await axios.post(`${API_BASE_URL}/forgot-password`, { email });
       setSuccessMessage(response.data.message);
       setErrorMessage("");
       setOtpSent(true);
@@ -44,7 +45,7 @@ const ForgotPassword = () => {
     setLoading(true);
     try {
       // Attempt to reset the password
-      const response = await axios.post("http://localhost:5000/api/reset-password", { email, otp, newPassword });
+      await axios.post(`${API_BASE_URL}/reset-password`, { email, otp, newPassword });
       setSuccessMessage("Password successfully reset! Redirecting to login...");
       setErrorMessage("");
     } catch (error) {

@@ -2,22 +2,21 @@ import React, { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
 import { Box, Typography, Paper } from "@mui/material";
 import axios from "axios";
+import { API_BASE_URL } from "../config";
 
 const Dashboard = () => {
   const [investorData, setInvestorData] = useState([]);
-  const [companyData, setCompanyData] = useState([]);
   const [pendingBusinessData, setPendingBusinessData] = useState([]);
   const [userData, setUserData] = useState([]);
 
   // Colors for pie charts
   const investorColors = ["#00C49F", "#FF8042", "#FFBB28"];
-  const companyColors = ["#0088FE", "#FFC300", "#FF5733"];
   const pendingBusinessColors = ["#FF5733", "#00C49F", "#FFBB28"];
   const userColors = ["#0088FE", "#FFC300", "#FF5733"];
 
   // Fetch investor data
   useEffect(() => {
-    axios.get("http://localhost:5000/api/investors")
+    axios.get(`${API_BASE_URL}/investors`)
       .then((response) => {
         const data = response.data;
         const statusCounts = data.reduce((acc, investor) => {
@@ -37,31 +36,9 @@ const Dashboard = () => {
       });
   }, []);
 
-  // Fetch company data
-  useEffect(() => {
-    axios.get("http://localhost:5000/api/companies")
-      .then((response) => {
-        const data = response.data;
-        const categoryCounts = data.reduce((acc, company) => {
-          acc[company.category] = (acc[company.category] || 0) + 1;
-          return acc;
-        }, {});
-
-        const formattedData = Object.keys(categoryCounts).map((category) => ({
-          name: category,
-          value: categoryCounts[category],
-        }));
-
-        setCompanyData(formattedData);
-      })
-      .catch((error) => {
-        console.error("Error fetching company data:", error);
-      });
-  }, []);
-
   // Fetch pending business data
   useEffect(() => {
-    axios.get("http://localhost:5000/api/pendingbusinesses")
+    axios.get(`${API_BASE_URL}/pendingbusinesses`)
       .then((response) => {
         const data = response.data;
         const statusCounts = data.reduce((acc, business) => {
@@ -83,7 +60,7 @@ const Dashboard = () => {
 
   // Fetch user data
   useEffect(() => {
-    axios.get("http://localhost:5000/api/users")
+    axios.get(`${API_BASE_URL}/users`)
       .then((response) => {
         const data = response.data;
         const roleCounts = data.reduce((acc, user) => {

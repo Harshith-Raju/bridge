@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container, Typography, Grid, Card, CardContent, Chip, Button } from '@mui/material';
+import { API_BASE_URL } from '../config';
 
 const Notification = () => {
   const [notifications, setNotifications] = useState([]);
@@ -8,7 +9,7 @@ const Notification = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/notifications');
+        const response = await axios.get(`${API_BASE_URL}/notifications`);
         setNotifications(response.data);
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -20,7 +21,7 @@ const Notification = () => {
 
   const handleApprove = async (id) => {
     try {
-      await axios.post(`http://localhost:5000/api/notifications/${id}/approve`);
+      await axios.post(`${API_BASE_URL}/notifications/${id}/approve`);
       setNotifications(notifications.map(notification =>
         notification._id === id ? { ...notification, status: 'approved' } : notification
       ));
@@ -31,7 +32,7 @@ const Notification = () => {
 
   const handleReject = async (id) => {
     try {
-      await axios.post(`http://localhost:5000/api/notifications/${id}/reject`);
+      await axios.post(`${API_BASE_URL}/notifications/${id}/reject`);
       setNotifications(notifications.map(notification =>
         notification._id === id ? { ...notification, status: 'rejected' } : notification
       ));

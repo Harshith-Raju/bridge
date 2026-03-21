@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 import { 
   Container, Typography, Grid, Card, CardContent, Chip, 
   Button, TextField, Box, MenuItem, Select, 
@@ -15,7 +16,7 @@ const ComList = () => {
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/businesses');
+        const response = await axios.get(`${API_BASE_URL}/businesses`);
         setBusinesses(response.data);
         console.log("Fetched Businesses:", response.data); // Debugging log
       } catch (error) {

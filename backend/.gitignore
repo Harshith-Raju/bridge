@@ -1,2 +1,4 @@
- .env
-  nodemodules/
+.env
+node_modules/
+uploads/
+*.log

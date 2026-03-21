@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Grid, Typography, Container, Box, Avatar } from '@mui/material';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 import {
     Person, Email, Phone, Work, Description, LinkedIn, GitHub, Twitter, Instagram
 } from '@mui/icons-material';
@@ -79,7 +80,7 @@ const ProfileForm = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/api/profile', formData, {
+            const response = await axios.post(`${API_BASE_URL}/profile`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

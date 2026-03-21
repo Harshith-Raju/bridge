@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { FaBuilding, FaGlobe, FaEnvelope, FaPhone, FaDollarSign, FaCalendarAlt } from "react-icons/fa";
+import { API_BASE_URL } from "../config";
 
 const RegisterCom = () => {
   const [formData, setFormData] = useState({
@@ -107,7 +108,7 @@ const RegisterCom = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/businesses", data, {
+      await axios.post(`${API_BASE_URL}/businesses`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
